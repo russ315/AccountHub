@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountHub.Api", "AccountHub.Api\AccountHub.Api.csproj", "{F0DA5303-7790-4772-82A3-FC573067ADC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountHub.Application", "AccountHub.Application\AccountHub.Application.csproj", "{947BD24E-2C80-43B6-8DC8-52D664F8E0C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountHub.Domain", "AccountHub.Domain\AccountHub.Domain.csproj", "{6CCB5CB1-99A2-465A-8BBD-50189C1F8CF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountHub.Infrastructure", "AccountHub.Infrastructure\AccountHub.Infrastructure.csproj", "{DCEB5C15-5CD1-426F-812F-515205C713CC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F0DA5303-7790-4772-82A3-FC573067ADC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0DA5303-7790-4772-82A3-FC573067ADC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0DA5303-7790-4772-82A3-FC573067ADC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0DA5303-7790-4772-82A3-FC573067ADC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{947BD24E-2C80-43B6-8DC8-52D664F8E0C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{947BD24E-2C80-43B6-8DC8-52D664F8E0C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{947BD24E-2C80-43B6-8DC8-52D664F8E0C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{947BD24E-2C80-43B6-8DC8-52D664F8E0C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CCB5CB1-99A2-465A-8BBD-50189C1F8CF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CCB5CB1-99A2-465A-8BBD-50189C1F8CF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CCB5CB1-99A2-465A-8BBD-50189C1F8CF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CCB5CB1-99A2-465A-8BBD-50189C1F8CF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCEB5C15-5CD1-426F-812F-515205C713CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCEB5C15-5CD1-426F-812F-515205C713CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCEB5C15-5CD1-426F-812F-515205C713CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCEB5C15-5CD1-426F-812F-515205C713CC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
