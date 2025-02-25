@@ -2,10 +2,10 @@
 
 public class GameVariant:BaseEntity
 {
-    public string Name { get; set; }
-    public string DataType { get; set; }
-    public string ValidationRules { get; set; }
+    public required string Name { get; set; }
+    public required string DataType { get; set; }
+    public required string ValidationRules { get; set; }
 
     public long GameId { get; set; }
-    public Game  Game { get; set; }
+    public Game? Game { get; set; }
 }
