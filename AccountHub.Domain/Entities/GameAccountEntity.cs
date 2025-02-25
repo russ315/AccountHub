@@ -1,14 +1,16 @@
-﻿using AccountHub.Domain.Models;
+﻿using System.Net.Http.Json;
+using System.Text.Json;
+using AccountHub.Domain.Models;
 
 namespace AccountHub.Domain.Entities;
 
-public  class GameAccount:BaseEntity
+public  class GameAccountEntity:BaseEntity
 {
-    public string? Characteristics  { get; set; }
+    public JsonDocument Characteristics  { get; set; }
     public decimal Price { get; set; }
     public AccountStatus Status { get; set; }
    
-    public Game? Game { get; set; }
+    public GameEntity? Game { get; set; }
     public long GameId { get; set; }
 
     public  UserEntity? Seller { get; set; }
@@ -16,5 +18,5 @@ public  class GameAccount:BaseEntity
 
     public required string CurrentOwnerId { get; set; }
     public UserEntity? CurrentOwner { get; set; }
-    public required ICollection<AccountImage> Images { get; set; }
+    public ICollection<AccountImageEntity> Images { get; set; } = null!;
 }

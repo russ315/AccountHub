@@ -4,8 +4,10 @@ namespace AccountHub.Domain.Interfaces;
 
 public interface IGameAccountRepository
 {
-    Task<GameAccount?> GetAccountById(long id, CancellationToken cancellationToken =default);
-    Task<IEnumerable<GameAccount>> GetAccountsByUsername(string username, CancellationToken cancellationToken=default);
-    Task<IEnumerable<GameAccount>> GetAccountsByGame(string gameName, CancellationToken cancellationToken=default);
+    Task<GameAccountEntity?> GetAccountById(long id, CancellationToken cancellationToken =default);
+    Task<IEnumerable<GameAccountEntity>> GetAccountsByUsername(string username, CancellationToken cancellationToken=default);
+    Task<IEnumerable<GameAccountEntity>> GetAccountsByGame(string gameName, CancellationToken cancellationToken=default);
+    Task<GameAccountEntity> AddGameAccount(GameAccountEntity gameEntity,CancellationToken cancellationToken=default);
+    Task<int> DeleteGameAccount(long gameId,CancellationToken cancellationToken=default);
 
 }

@@ -1,6 +1,6 @@
 ﻿namespace AccountHub.Domain.Entities;
 
-public class ServiceSchedule:BaseEntity
+public class ServiceScheduleEntity:BaseEntity
 {
     
     public DateTime StartTime { get; set; }
@@ -11,7 +11,7 @@ public class ServiceSchedule:BaseEntity
     public bool IsConfirmed { get; set; }
     
     public long GameServiceId { get; set; }
-    public GameService? GameService { get; set; }
+    public GameServiceEntity? GameService { get; set; }
     
     public string? ClientId { get; set; }
     public UserEntity? Client { get; set; }

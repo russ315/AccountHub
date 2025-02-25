@@ -12,15 +12,15 @@ public sealed class DataContext:IdentityDbContext<UserEntity>
         
     }
 
-    public DbSet<Game> Games { get; set; }
-    public DbSet<GameService> GameServices { get; set; }
-    public DbSet<GameAccount> GameAccounts { get; set; }
-    public DbSet<Transaction> Transactions { get; set; }
-    public DbSet<AccountImage> AccountImages { get; set; }
-    public DbSet<GameVariant> GameVariants { get; set; }
-    public DbSet<Notification> Notifications { get; set; }
-    public DbSet<Review> Reviews { get; set; }
-    public DbSet<ServiceSchedule> ServiceSchedules { get; set; }
+    public DbSet<GameEntity> Games { get; set; }
+    public DbSet<GameServiceEntity> GameServices { get; set; }
+    public DbSet<GameAccountEntity> GameAccounts { get; set; }
+    public DbSet<TransactionEntity> Transactions { get; set; }
+    public DbSet<AccountImageEntity> AccountImages { get; set; }
+    public DbSet<GameVariantEntity> GameVariants { get; set; }
+    public DbSet<NotificationEntity> Notifications { get; set; }
+    public DbSet<ReviewEntity> Reviews { get; set; }
+    public DbSet<ServiceScheduleEntity> ServiceSchedules { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

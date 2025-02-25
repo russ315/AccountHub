@@ -2,7 +2,7 @@
 
 namespace AccountHub.Domain.Entities;
 
-public class Notification:BaseEntity
+public class NotificationEntity:BaseEntity
 {
 
     public required string Message { get; set; }

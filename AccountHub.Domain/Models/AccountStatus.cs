@@ -2,10 +2,9 @@
 
 public enum AccountStatus
 {
-    Available,      
+    Available = 0,      
     PendingReview,  
     Sold,           
-    Rented,         
     Suspended,      
     Banned,         
     Reserved,       

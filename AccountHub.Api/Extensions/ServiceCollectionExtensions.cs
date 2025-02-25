@@ -1,4 +1,6 @@
-﻿using AccountHub.Domain.Entities;
+﻿using AccountHub.Application.Services;
+using AccountHub.Application.Services.Game;
+using AccountHub.Domain.Entities;
 using AccountHub.Domain.Interfaces;
 using AccountHub.Infrastructure.Data;
 using AccountHub.Infrastructure.Repositories;
@@ -18,8 +20,7 @@ public static class ServiceCollectionExtensions
     public static WebApplicationBuilder AddData(this WebApplicationBuilder builder)
     {
         builder.Services.AddDbContext<DataContext>(options=>options.UseNpgsql
-            (builder.Configuration.GetConnectionString("DefaultConnection")))
-            ;
+            (builder.Configuration.GetConnectionString("DefaultConnection")));
         return builder;
         
     }
@@ -44,7 +45,9 @@ public static class ServiceCollectionExtensions
         builder.Services.AddScoped<IGameAccountRepository, GameAccountRepository>();
         builder.Services.AddScoped<IGameServiceRepository, GameServiceRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
-      
+        builder.Services.AddScoped<IGameService, GameService>();
+        builder.Services.AddScoped<IGameAccountService, GameAccountService>();
+        builder.Services.AddScoped<IGameServiceManager, GameServiceManager>();
 
 
         return builder;

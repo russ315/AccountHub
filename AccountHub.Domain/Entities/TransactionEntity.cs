@@ -1,6 +1,6 @@
 ﻿namespace AccountHub.Domain.Entities;
 
-public class Transaction:BaseEntity
+public class TransactionEntity:BaseEntity
 {
     public decimal Amount { get; set; }
     
@@ -8,5 +8,5 @@ public class Transaction:BaseEntity
     public UserEntity? Buyer { get; set; }
 
     public long GameAccountId { get; set; }
-    public GameAccount? GameAccount { get; set; }
+    public GameAccountEntity? GameAccount { get; set; }
 }

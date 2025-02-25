@@ -1,6 +1,6 @@
 ﻿namespace AccountHub.Domain.Entities;
 
-public class AccountImage
+public class AccountImageEntity
 {
     public int Id { get; set; }
     public required string ImageUrl { get; set; }
@@ -9,5 +9,5 @@ public class AccountImage
     
     
     public long GameAccountId { get; set; }
-    public GameAccount? GameAccount { get; set; }
+    public GameAccountEntity? GameAccount { get; set; }
 }

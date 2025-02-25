@@ -4,12 +4,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AccountHub.Infrastructure.Data.Configurations;
 
-public class GameConfiguration:IEntityTypeConfiguration<Game>
+public class GameConfiguration:IEntityTypeConfiguration<GameEntity>
 {
-    public void Configure(EntityTypeBuilder<Game> builder)
+    public void Configure(EntityTypeBuilder<GameEntity> builder)
     {
         builder.HasKey(x => x.Id);
-        
+        builder.HasIndex(p=>p.Name).IsUnique()
+            .HasFilter("lower(Name) = lower(Name)")
+            .HasOperators("text_pattern_ops"); 
         builder.Property(x => x.Metadata).HasColumnType("jsonb");
         
         builder.HasMany(p=>p.Services)

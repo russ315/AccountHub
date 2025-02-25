@@ -3,6 +3,7 @@ using System;
 using AccountHub.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AccountHub.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250225130316_AddedIndexToNameFieldOfGameEntity")]
+    partial class AddedIndexToNameFieldOfGameEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,7 +123,7 @@ namespace AccountHub.Infrastructure.Migrations
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasFilter("lower(Name) = lower(Name)");
+                        .HasFilter("lower(name) = lower(Name)");
 
                     NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("Name"), new[] { "text_pattern_ops" });
 

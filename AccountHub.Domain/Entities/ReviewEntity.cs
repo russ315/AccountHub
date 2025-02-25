@@ -1,6 +1,6 @@
 ﻿namespace AccountHub.Domain.Entities;
 
-public class Review:BaseEntity
+public class ReviewEntity:BaseEntity
 {
     public required string ReviewerId { get; set; }
     public UserEntity? Reviewer { get; set; }

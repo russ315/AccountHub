@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AccountHub.Infrastructure.Data.Configurations;
 
-public class GameServiceConfiguration:IEntityTypeConfiguration<GameService>
+public class GameServiceConfiguration:IEntityTypeConfiguration<GameServiceEntity>
 {
-    public void Configure(EntityTypeBuilder<GameService> builder)
+    public void Configure(EntityTypeBuilder<GameServiceEntity> builder)
     {
         builder.HasKey(x => x.Id);
 

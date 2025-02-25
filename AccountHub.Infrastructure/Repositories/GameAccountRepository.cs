@@ -13,29 +13,41 @@ public class GameAccountRepository:IGameAccountRepository
     {
         _context = context;
     }
-    public Task<GameAccount?> GetAccountById(long id, CancellationToken cancellationToken=default)
+    public async Task<GameAccountEntity?> GetAccountById(long id, CancellationToken cancellationToken=default)
     {
-        var gameAccount = _context.GameAccounts.FirstOrDefaultAsync(p=>p.Id==id, cancellationToken);
+        var gameAccount = await _context.GameAccounts.FirstOrDefaultAsync(p=>p.Id==id, cancellationToken);
         return gameAccount;
     }
 
-    public async Task<IEnumerable<GameAccount>> GetAccountsByUsername(string username, CancellationToken cancellationToken=default)
+    public async Task<IEnumerable<GameAccountEntity>> GetAccountsByUsername(string username, CancellationToken cancellationToken=default)
     {
         var games = await _context.GameAccounts
             .Include(p=>p.Seller)
-            .Include(p=>p.CurrentOwner)
             .Where(p=>(p.Seller!=null && p.Seller.UserName==username)
-                      ||(p.CurrentOwner!=null && p.CurrentOwner.UserName==username)).ToListAsync(cancellationToken); 
+                      ).ToListAsync(cancellationToken); 
         
         return games;
     }
 
-    public async Task<IEnumerable<GameAccount>> GetAccountsByGame(string gameName, CancellationToken cancellationToken=default)
+    public async Task<IEnumerable<GameAccountEntity>> GetAccountsByGame(string gameName, CancellationToken cancellationToken=default)
     {
         var games = await _context.GameAccounts
             .Include(p=>p.Game)
             .Where(p=>p.Game!=null && p.Game.Name==gameName)
             .ToListAsync(cancellationToken);
         return games;
+    }
+
+    public async Task<GameAccountEntity> AddGameAccount(GameAccountEntity gameEntity, CancellationToken cancellationToken = default)
+    {
+        var result =await _context.GameAccounts.AddAsync(gameEntity,cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+        return result.Entity;
+    }
+
+    public async Task<int> DeleteGameAccount(long id, CancellationToken cancellationToken = default)
+    {
+        var result = await _context.GameAccounts.Where(p=>p.Id==id).ExecuteDeleteAsync(cancellationToken);
+        return result;
     }
 }

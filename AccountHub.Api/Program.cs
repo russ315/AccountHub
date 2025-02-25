@@ -1,8 +1,12 @@
+using System.Text.Json.Serialization;
 using AccountHub.Api.Extensions;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    
+});
 
 builder
     .AddData()
@@ -20,6 +24,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapControllers();
 app.UseHttpsRedirection();
 
 
