@@ -1,7 +1,7 @@
 ﻿using AccountHub.Application.DTOs.Game;
 using AccountHub.Domain.Entities;
 
-namespace AccountHub.Application.Services.Game;
+namespace AccountHub.Application.Services.Abstractions.Games;
 
 public interface IGameAccountService
 {

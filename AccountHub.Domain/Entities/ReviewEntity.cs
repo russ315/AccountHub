@@ -1,4 +1,6 @@
-﻿namespace AccountHub.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace AccountHub.Domain.Entities;
 
 public class ReviewEntity:BaseEntity
 {

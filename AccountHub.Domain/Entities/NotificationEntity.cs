@@ -10,6 +10,6 @@ public class NotificationEntity:BaseEntity
     public NotificationType Type { get; set; }
     
     public required string UserId { get; set; }
-    public  UserEntity User { get; set; }
+    public UserEntity? User { get; set; }
 }
 

@@ -1,5 +1,5 @@
 ﻿using AccountHub.Domain.Entities;
-using AccountHub.Domain.Interfaces;
+using AccountHub.Domain.Repositories;
 using AccountHub.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 

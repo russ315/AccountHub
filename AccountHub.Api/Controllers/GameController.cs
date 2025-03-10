@@ -1,6 +1,8 @@
 ﻿using AccountHub.Application.DTOs.Game;
+using AccountHub.Application.Services.Abstractions;
+using AccountHub.Application.Services.Abstractions.Games;
 using AccountHub.Application.Services.Game;
-using AccountHub.Domain.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AccountHub.Api.Controllers;
@@ -15,6 +17,7 @@ public class GameController:Controller
         _gameService = gameService;
     }
 
+    [Authorize]
     [HttpGet("{gameId}")]
     public async Task<IActionResult> GetGame(long gameId)
     {

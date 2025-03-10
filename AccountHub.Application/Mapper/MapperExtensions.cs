@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Security.Cryptography;
+using System.Text.Json;
+using AccountHub.Application.DTOs;
 using AccountHub.Application.DTOs.Game;
 using AccountHub.Domain.Entities;
 using AccountHub.Domain.Models;
@@ -38,4 +40,16 @@ public static class MapperExtensions
             GameId = model.GameId,
         };
     }
+
+    public static UserEntity ToEntity(this UserRegisterDto model)
+    {
+        return new UserEntity()
+        {
+            UserName = model.Username,
+            Email = model.Email,
+
+        };
+    }
+    
+    
 }

@@ -1,11 +1,12 @@
 ﻿using AccountHub.Application.DTOs.Game;
 using AccountHub.Application.Mapper;
-using AccountHub.Application.Services.Game;
+using AccountHub.Application.Services.Abstractions;
+using AccountHub.Application.Services.Abstractions.Games;
 using AccountHub.Domain.Entities;
 using AccountHub.Domain.Exceptions;
-using AccountHub.Domain.Interfaces;
+using AccountHub.Domain.Repositories;
 
-namespace AccountHub.Application.Services;
+namespace AccountHub.Application.Services.Game;
 
 public class GameService:IGameService
 {

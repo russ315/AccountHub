@@ -6,7 +6,7 @@ namespace AccountHub.Domain.Entities;
 
 public  class GameAccountEntity:BaseEntity
 {
-    public JsonDocument Characteristics  { get; set; }
+    public required JsonDocument Characteristics  { get; set; }
     public decimal Price { get; set; }
     public AccountStatus Status { get; set; }
    

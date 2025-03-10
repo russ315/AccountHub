@@ -1,28 +1,28 @@
 using System.Text.Json.Serialization;
 using AccountHub.Api.Extensions;
+using AccountHub.Domain.Entities;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    
-});
+builder.Services.AddControllers();
 
 builder
     .AddData()
+    .AddSwagger()
     .AddAuthorization()
     .AddOptions()
-    .AddSwagger()
     .AddApplicationServices()
     .AddIntegrationServices();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 app.UseHttpsRedirection();

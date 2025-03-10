@@ -9,10 +9,10 @@ public class UserEntity:IdentityUser
     public decimal Balance { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     [JsonIgnore]
-    public virtual ICollection<GameAccountEntity>? GameAccounts { get; set; }
-    public virtual ICollection<TransactionEntity>? Transactions { get; set; }
-    public virtual ICollection<ReviewEntity>? ReviewsGiven { get; set; }
-    public virtual ICollection<ReviewEntity>? ReviewsReceived { get; set; }
-    public virtual ICollection<GameServiceEntity>? ServicesProvided { get; set; }
-    public virtual ICollection<NotificationEntity>? Notifications { get; set; }
+    public  ICollection<GameAccountEntity>? GameAccounts { get; set; }
+    public  ICollection<TransactionEntity>? Transactions { get; set; }
+    public  ICollection<ReviewEntity>? ReviewsGiven { get; set; }
+    public  ICollection<ReviewEntity>? ReviewsReceived { get; set; }
+    public  ICollection<GameServiceEntity>? ServicesProvided { get; set; }
+    public  ICollection<NotificationEntity>? Notifications { get; set; }
 }

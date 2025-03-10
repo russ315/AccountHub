@@ -1,6 +1,6 @@
 ﻿using AccountHub.Domain.Entities;
 
-namespace AccountHub.Domain.Interfaces;
+namespace AccountHub.Domain.Repositories;
 
 public interface IGameServiceRepository
 {
