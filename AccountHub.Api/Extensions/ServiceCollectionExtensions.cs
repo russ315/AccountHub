@@ -55,6 +55,7 @@ public static class ServiceCollectionExtensions
         return builder;
         
     }
+   
     public static WebApplicationBuilder AddAuthorization(this WebApplicationBuilder builder)
     {
         builder.Services.AddAuthentication(options =>
@@ -120,6 +121,8 @@ public static class ServiceCollectionExtensions
         builder.Services.AddScoped<IGameRepository, GameRepository>();
         builder.Services.AddScoped<IGameAccountRepository, GameAccountRepository>();
         builder.Services.AddScoped<IGameServiceRepository, GameServiceRepository>();
+        builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
         builder.Services.AddScoped<IGameService, GameService>();
         builder.Services.AddScoped<IGameAccountService, GameAccountService>();
         builder.Services.AddScoped<IGameServiceManager, GameServiceManager>();

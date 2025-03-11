@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Security.Authentication;
+using System.Security.Claims;
 using AccountHub.Application.DTOs;
 using AccountHub.Application.Services.Abstractions;
 using AccountHub.Domain.Entities;
@@ -12,41 +13,72 @@ namespace AccountHub.Api.Controllers;
 public class AccountController:ControllerBase
 {
     private readonly IUserService _userService;
-    private readonly IJwtService _jwtService;
-
-    public AccountController(IUserService userService,IJwtService jwtService)
+    private const string RefreshTokenCookieName = "refresh_token";
+    private const string AccessTokenCookieName = "access_token";
+    private const string DeviceIdHeaderName = "X-DeviceId";
+    public AccountController(IUserService userService)
     {
         _userService = userService;
-        _jwtService = jwtService;
     }
 
     [HttpPost("register")]
     public async Task<ActionResult<UserEntity>> Register(UserRegisterDto model)
     {
         var user = await _userService.Register(model);
-        var jwt =_jwtService.GenerateJwtAccessToken(user);
-        HttpContext.Response.Cookies.Append("access_token",jwt);
+        await AddTokenCookies(user);
         return Ok(user);
     }
     [HttpPost("login")]
     public async Task<ActionResult<UserEntity>> Login(UserLoginDto model)
     {
         var user = await _userService.Login(model);
-        var jwt =_jwtService.GenerateJwtAccessToken(user);
-        HttpContext.Response.Cookies.Append("access_token",jwt);
+        await AddTokenCookies(user);
+
         return Ok(user);
     }
 
     [HttpGet("refresh")]
     public async Task<ActionResult<UserEntity>> RefreshJwtToken()
     {
-        Console.Write(HttpContext.Request.Cookies[".AspNetCore.Identity.Application"]);
-        HttpContext.Request.Cookies.TryGetValue("refresh_token", out var refreshToken);
-        var user = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
-        if(user==null)
+        var refreshToken = Request.Cookies[RefreshTokenCookieName];
+        if(refreshToken==null)
             throw new UnauthorizedAccessException();
-        var jwt = await _userService.RefreshToken(user);
-        return Ok(jwt);
+        var accessToken = Request.Cookies[AccessTokenCookieName]!;
+        var deviceId = Request.Headers[DeviceIdHeaderName];
+        var refreshTokenIsValid = await _userService.CheckRefreshToken(refreshToken,accessToken,deviceId!);
+        if (!refreshTokenIsValid)
+            return Unauthorized();
+
+        var user = await _userService.GetUserByAccessToken(accessToken);
+        await AddTokenCookies(user);
+
+        return Ok();
+    }
+
+
+    private async Task AddTokenCookies(UserEntity user)
+    {
+        var deviceId = Request.Headers[DeviceIdHeaderName].ToString();
+        if(string.IsNullOrEmpty(deviceId))
+            throw new InvalidCredentialException("Invalid device id");
+        var jwt =_userService.GetAccessToken(user);
+        var refreshToken =await _userService.GetRefreshToken(jwt,deviceId);
+
+        Response.Cookies.Append(AccessTokenCookieName, jwt, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTime.Now.AddDays(7)
+        });
+        
+        Response.Cookies.Append(RefreshTokenCookieName, refreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTime.Now.AddDays(7)
+        });
     }
     
 }

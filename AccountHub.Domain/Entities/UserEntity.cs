@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 
 namespace AccountHub.Domain.Entities;
@@ -13,6 +14,13 @@ public class UserEntity:IdentityUser
     public  ICollection<TransactionEntity>? Transactions { get; set; }
     public  ICollection<ReviewEntity>? ReviewsGiven { get; set; }
     public  ICollection<ReviewEntity>? ReviewsReceived { get; set; }
+    [NotMapped]
+
     public  ICollection<GameServiceEntity>? ServicesProvided { get; set; }
+    [NotMapped]
     public  ICollection<NotificationEntity>? Notifications { get; set; }
+    
+    [NotMapped]
+    public  ICollection<RefreshTokenEntity>? RefreshTokens { get; set; }
+
 }

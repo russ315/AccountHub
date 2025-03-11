@@ -40,14 +40,7 @@ public class JwtService : IJwtService
         return jwt;
     }
 
-    private ClaimsIdentity GenerateClaims(UserEntity model)
-    {
-        var claims = new ClaimsIdentity();
-        claims.AddClaim(new Claim(JwtRegisteredClaimNames.Email, model.Email!));
-        claims.AddClaim(new Claim(ClaimTypes.Name, model.UserName!));
-        claims.AddClaim(new Claim(JwtRegisteredClaimNames.NameId, model.Id));
-        return claims;
-    }
+   
 
     public async Task<bool> ValidateJwtToken(string jwtToken)
     {
@@ -71,7 +64,7 @@ public class JwtService : IJwtService
         return Convert.ToBase64String(randomNumber);
     }
 
-    public async Task<string> GetUsernameFromExpiredToken(string jwtToken)
+    public async Task<string> GetUserIdFromExpiredToken(string jwtToken)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_options.SecretKey);
@@ -80,11 +73,23 @@ public class JwtService : IJwtService
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key),
             ValidateIssuer = true,
-            ValidateLifetime = false
+            ValidateAudience = true,
+            ValidateLifetime = false,
+            ValidIssuer = _options.Issuer,
+            ValidAudience = _options.Audience
         };
         var claims = await tokenHandler.ValidateTokenAsync(jwtToken, tokenValidationParameters);
-        if(claims.IsValid && claims.ClaimsIdentity.Name is not null)
-            return claims.ClaimsIdentity.Name;
+        if (claims.IsValid)
+            return claims.ClaimsIdentity.Claims.First(p => p.Type == ClaimTypes.NameIdentifier).Value;
+        
         throw new InvalidTokenException("Invalid token");
-    }
+    } 
+    private ClaimsIdentity GenerateClaims(UserEntity model)
+         {
+             var claims = new ClaimsIdentity();
+             claims.AddClaim(new Claim(ClaimTypes.Email, model.Email!));
+             claims.AddClaim(new Claim(ClaimTypes.Name, model.UserName!));
+             claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, model.Id));
+             return claims;
+         }
 }

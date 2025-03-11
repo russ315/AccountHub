@@ -21,6 +21,7 @@ public sealed class DataContext:IdentityDbContext<UserEntity>
     public DbSet<NotificationEntity> Notifications { get; set; }
     public DbSet<ReviewEntity> Reviews { get; set; }
     public DbSet<ServiceScheduleEntity> ServiceSchedules { get; set; }
+    public DbSet<RefreshTokenEntity> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
