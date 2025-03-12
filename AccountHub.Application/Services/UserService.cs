@@ -1,5 +1,4 @@
-﻿using System.Security.Authentication;
-using AccountHub.Application.DTOs;
+﻿using AccountHub.Application.DTOs;
 using AccountHub.Application.Services.Abstractions;
 using AccountHub.Application.Mapper;
 using AccountHub.Domain.Entities;
@@ -17,7 +16,30 @@ public class UserService : IUserService
     private readonly IJwtService _jwtService;
     private readonly UserManager<UserEntity> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+
+    public async Task<string> GetRefreshToken(string accessToken, string deviceId)
+    {
+        var token = _jwtService.GenerateRefreshToken();
+        var userId = await _jwtService.GetUserIdFromExpiredToken(accessToken);
+
+        await _refreshTokenRepository.DeleteRefreshToken(userId, deviceId);
+
+
+        
+        await _refreshTokenRepository.AddRefreshToken(new RefreshTokenEntity()
+        {
+            UserId = userId,
+            Token = token,
+            DeviceId = deviceId,
+            Expires = DateTime.UtcNow.AddDays(7)
+        });
+        return token;
+
+
+    }
+
     private readonly SignInManager<UserEntity> _signInManager;
+
     private readonly IRefreshTokenRepository _refreshTokenRepository;
 
     public UserService(IJwtService jwtService, UserManager<UserEntity> userManager
@@ -34,12 +56,12 @@ public class UserService : IUserService
     public async Task<UserEntity> Register(UserRegisterDto userRegisterDto)
     {
         if (await _userManager.FindByEmailAsync(userRegisterDto.Email) != null)
-            throw new AuthenticationException("Email already exists");
+            throw new DuplicateEntityException("User is already registered",$"User with email {userRegisterDto.Email} already registered");
 
         var userEntity = userRegisterDto.ToEntity();
         var userCreateResult = await _userManager.CreateAsync(userEntity, userRegisterDto.Password);
         if (!userCreateResult.Succeeded)
-            throw new InvalidCredentialException("Registering user failed.");
+            throw new BadRequestException("Invalid data","Registering user failed");
         await _userManager.AddToRoleAsync(userEntity, RoleConsts.User);
         await _signInManager.SignInAsync(userEntity, false);
         return userEntity;
@@ -50,36 +72,14 @@ public class UserService : IUserService
     {
         var userEntity = await _userManager.FindByNameAsync(userLoginDto.Username);
         if (userEntity == null)
-            throw new InvalidCredentialException("Invalid username or password");
+            throw new BadRequestException("Invalid data","Invalid username or password");
         if (!await _userManager.IsEmailConfirmedAsync(userEntity))
-            throw new AuthenticationException("Email is not confirmed");
+            throw new ForbiddenException("Email is not confirmed",$"Please confirm your email {userEntity.Email} and try again");
 
         var result = await _signInManager.PasswordSignInAsync(userEntity, userLoginDto.Password, false, false);
         if (!result.Succeeded)
-            throw new InvalidCredentialException("Invalid username or password");
+            throw new BadRequestException("Invalid data","Invalid username or password");
         return userEntity;
-    }
-
-    public async Task<string> GetRefreshToken(string accessToken, string deviceId)
-    {
-        var token = _jwtService.GenerateRefreshToken();
-        var userId = await _jwtService.GetUserIdFromExpiredToken(accessToken);
-
-        var refreshTokenExists = await _refreshTokenRepository.GetRefreshToken(userId, deviceId);
-        if (refreshTokenExists is not null)
-            await _refreshTokenRepository.DeleteRefreshToken(userId, deviceId);
-
-
-        var refreshTokenAddResult = await _refreshTokenRepository.AddRefreshToken(new RefreshTokenEntity()
-        {
-            UserId = userId,
-            Token = token,
-            DeviceId = deviceId,
-            Expires = DateTime.UtcNow.AddDays(7)
-        });
-        return token;
-
-
     }
 
     public string GetAccessToken(UserEntity userEntity)
@@ -92,7 +92,7 @@ public class UserService : IUserService
         var userId = await _jwtService.GetUserIdFromExpiredToken(accessToken);
         var user = await _userManager.FindByIdAsync(userId);
         
-        return user;
+        return user!;
     }
 
     public async Task<bool> CheckRefreshToken(string refreshToken, string accessToken, string deviceId)
@@ -100,9 +100,9 @@ public class UserService : IUserService
         
         var userId = await _jwtService.GetUserIdFromExpiredToken(accessToken);
         var refreshTokenEntity = await _refreshTokenRepository.GetRefreshToken(userId, deviceId);
-        if (refreshTokenEntity?.Token != refreshToken)
+        if (refreshTokenEntity?.Token != refreshToken || refreshTokenEntity.Expires<DateTime.Now)
             return false;
-
+        
         return true;
 
     }

@@ -82,7 +82,7 @@ public class JwtService : IJwtService
         if (claims.IsValid)
             return claims.ClaimsIdentity.Claims.First(p => p.Type == ClaimTypes.NameIdentifier).Value;
         
-        throw new InvalidTokenException("Invalid token");
+        throw new InvalidTokenException("Invalid token","Token was not validated");
     } 
     private ClaimsIdentity GenerateClaims(UserEntity model)
          {

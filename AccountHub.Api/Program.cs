@@ -12,10 +12,12 @@ builder
     .AddAuthorization()
     .AddOptions()
     .AddApplicationServices()
-    .AddIntegrationServices();
+    .AddIntegrationServices()
+    .AddExceptionHandler();
 
 var app = builder.Build();
 
+app.UseExceptionHandler();
 
 app.UseSwagger();
 app.UseSwaggerUI();

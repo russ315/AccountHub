@@ -3,6 +3,7 @@ using System.Security.Claims;
 using AccountHub.Application.DTOs;
 using AccountHub.Application.Services.Abstractions;
 using AccountHub.Domain.Entities;
+using AccountHub.Domain.Exceptions;
 using AccountHub.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,12 +43,12 @@ public class AccountController:ControllerBase
     {
         var refreshToken = Request.Cookies[RefreshTokenCookieName];
         if(refreshToken==null)
-            throw new UnauthorizedAccessException();
+            throw new BadRequestException("Refresh token is invalid","Refresh token cookie is required");
         var accessToken = Request.Cookies[AccessTokenCookieName]!;
         var deviceId = Request.Headers[DeviceIdHeaderName];
         var refreshTokenIsValid = await _userService.CheckRefreshToken(refreshToken,accessToken,deviceId!);
         if (!refreshTokenIsValid)
-            return Unauthorized();
+            throw new BadRequestException("Refresh token is invalid","Refresh token cookie is invalid.Please log in again");
 
         var user = await _userService.GetUserByAccessToken(accessToken);
         await AddTokenCookies(user);
@@ -59,8 +60,8 @@ public class AccountController:ControllerBase
     private async Task AddTokenCookies(UserEntity user)
     {
         var deviceId = Request.Headers[DeviceIdHeaderName].ToString();
-        if(string.IsNullOrEmpty(deviceId))
-            throw new InvalidCredentialException("Invalid device id");
+        if(string.IsNullOrWhiteSpace(deviceId))
+            throw new BadRequestException("Invalid device id","Device id header is required");
         var jwt =_userService.GetAccessToken(user);
         var refreshToken =await _userService.GetRefreshToken(jwt,deviceId);
 

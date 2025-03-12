@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using AccountHub.Api.Handlers;
 using AccountHub.Application.Services;
 using AccountHub.Application.Services.Abstractions;
 using AccountHub.Application.Services.Abstractions.Games;
@@ -30,7 +31,7 @@ public static class ServiceCollectionExtensions
             {
                 Scheme = "Bearer",
                 BearerFormat = "JWT",
-                Name = "Authorization",
+                Name = "X-DeviceId",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.Http,
                 Description = "JWT Authorization header using the Bearer scheme.",
@@ -55,7 +56,14 @@ public static class ServiceCollectionExtensions
         return builder;
         
     }
-   
+    
+    public static WebApplicationBuilder AddExceptionHandler(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+        builder.Services.AddProblemDetails();
+        return builder;
+        
+    }
     public static WebApplicationBuilder AddAuthorization(this WebApplicationBuilder builder)
     {
         builder.Services.AddAuthentication(options =>

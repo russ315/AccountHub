@@ -20,7 +20,7 @@ public class GameServiceManager:IGameServiceManager
     {
         var game = await _gameServiceRepository.GetAccountServiceById(id);
         if(game is null)
-            throw new EntityNotFoundException($"Game with id: {id} not found");
+            throw new EntityNotFoundException("Game not found",$"Game with id: {id} is not found");
         return game;
     }
 
@@ -45,7 +45,7 @@ public class GameServiceManager:IGameServiceManager
     {
         var totalRowsDeleted =await  _gameServiceRepository.DeleteGameService(id);
         if(totalRowsDeleted ==0)
-            throw new EntityNotFoundException($"GameAccount with id: {id} not found");
+            throw new EntityNotFoundException("Game is not found",$"GameAccount with id: {id} is not found");
 
     }
 }

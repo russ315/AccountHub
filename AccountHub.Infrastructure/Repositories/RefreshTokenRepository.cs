@@ -32,8 +32,7 @@ public class RefreshTokenRepository:IRefreshTokenRepository
         
        var totalDeletedTokens =await _context.RefreshTokens.Where(x=> x.UserId == userId && x.DeviceId == deviceId)
             .ExecuteDeleteAsync();
-       if(totalDeletedTokens == 0)
-           throw new EntityNotFoundException("Refresh token not found");
+       
        return totalDeletedTokens;
         
     }

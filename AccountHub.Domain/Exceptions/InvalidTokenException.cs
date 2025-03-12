@@ -1,9 +1,13 @@
-﻿namespace AccountHub.Domain.Exceptions;
+﻿using System.Net;
 
-public class InvalidTokenException:Exception
+namespace AccountHub.Domain.Exceptions;
+
+public class InvalidTokenException:BaseException
 {
-    public InvalidTokenException(string message):base(message)
+    public InvalidTokenException(string title,string message):base(title,message)
     {
         
     }
+
+    public override HttpStatusCode HttpStatusCode { get; set; } = HttpStatusCode.Unauthorized;
 }

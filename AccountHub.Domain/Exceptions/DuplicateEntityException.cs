@@ -1,9 +1,13 @@
-﻿namespace AccountHub.Domain.Exceptions;
+﻿using System.Net;
 
-public class DuplicateEntityException:Exception
+namespace AccountHub.Domain.Exceptions;
+
+public class DuplicateEntityException:BaseException
 {
-    public DuplicateEntityException(string message):base(message)
+    public DuplicateEntityException(string title,string message):base(title,message)
     {
         
     }
+
+    public override HttpStatusCode HttpStatusCode { get; set; } = HttpStatusCode.Conflict;
 }

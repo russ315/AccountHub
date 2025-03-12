@@ -1,8 +1,11 @@
-﻿namespace AccountHub.Domain.Exceptions;
+﻿using System.Net;
 
-public class EntityNotFoundException:Exception
+namespace AccountHub.Domain.Exceptions;
+
+public class EntityNotFoundException:BaseException
 {
-    public EntityNotFoundException(string message):base(message)
+    public override HttpStatusCode HttpStatusCode { get; set; } = HttpStatusCode.NotFound;
+    public EntityNotFoundException(string title,string message):base(title,message)
     {
         
     }
