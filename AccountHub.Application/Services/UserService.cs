@@ -1,4 +1,4 @@
-﻿using AccountHub.Application.DTOs;
+﻿using AccountHub.Application.DTOs.Authentication;
 using AccountHub.Application.Services.Abstractions;
 using AccountHub.Application.Mapper;
 using AccountHub.Domain.Entities;
@@ -6,9 +6,7 @@ using AccountHub.Domain.Exceptions;
 using AccountHub.Domain.Models;
 using AccountHub.Domain.Repositories;
 using AccountHub.Domain.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AccountHub.Application.Services;
@@ -68,7 +66,7 @@ public class UserService : IUserService
             };
         }
 
-        await _userManager.AddToRoleAsync(userEntity, RoleConsts.User);
+        await _userManager.AddToRoleAsync(userEntity, RoleConstants.User);
         await _signInManager.SignInAsync(userEntity, false);
         return userEntity;
     }

@@ -107,9 +107,9 @@ public static class ServiceCollectionExtensions
         
         builder.Services.AddAuthorization(options =>
         {
-            options.AddPolicy("Admin", o => o.RequireRole(RoleConsts.Admin));
-            options.AddPolicy("Merchant", o => o.RequireRole(RoleConsts.Merchant));
-            options.AddPolicy("User", o => o.RequireRole(RoleConsts.User));
+            options.AddPolicy("Admin", o => o.RequireRole(RoleConstants.Admin));
+            options.AddPolicy("Merchant", o => o.RequireRole(RoleConstants.Merchant));
+            options.AddPolicy("User", o => o.RequireRole(RoleConstants.User));
 
         });
 

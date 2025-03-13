@@ -1,4 +1,4 @@
-﻿using AccountHub.Application.DTOs;
+﻿using AccountHub.Application.DTOs.Authentication;
 using AccountHub.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 

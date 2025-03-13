@@ -2,10 +2,8 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using AccountHub.Application.DTOs;
 using AccountHub.Domain.Entities;
 using AccountHub.Domain.Exceptions;
-using AccountHub.Domain.Models;
 using AccountHub.Domain.Options;
 using AccountHub.Domain.Services;
 using Microsoft.AspNetCore.Identity;
@@ -16,13 +14,11 @@ namespace AccountHub.Infrastructure.Services;
 
 public class JwtService : IJwtService
 {
-    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly UserManager<UserEntity> _userManager;
     private readonly JwtOptions _options;
 
-    public JwtService(IOptions<JwtOptions> options,RoleManager<IdentityRole> roleManager,UserManager<UserEntity> userManager)
+    public JwtService(IOptions<JwtOptions> options,UserManager<UserEntity> userManager)
     {
-        _roleManager = roleManager;
         _userManager = userManager;
         _options = options.Value;
     }

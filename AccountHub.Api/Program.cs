@@ -1,7 +1,4 @@
-using System.Text.Json.Serialization;
 using AccountHub.Api.Extensions;
-using AccountHub.Domain.Entities;
-using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 

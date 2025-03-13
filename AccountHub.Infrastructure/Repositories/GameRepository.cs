@@ -25,11 +25,12 @@ public class GameRepository: IGameRepository
         return game;    
     }
 
-    public async Task<GameEntity?> AddGame(GameEntity gameEntity, CancellationToken cancellationToken = default)
+    public async Task<GameEntity> AddGame(GameEntity gameEntity, CancellationToken cancellationToken = default)
     {
         
         var gameResult = await _context.Games.AddAsync(gameEntity,cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
+        
         return gameResult.Entity;
     }
 

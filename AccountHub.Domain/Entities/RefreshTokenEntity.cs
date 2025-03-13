@@ -10,7 +10,7 @@ public class RefreshTokenEntity:BaseEntity
     public required string Token { get; set; } 
     [Required]
     public DateTime Expires { get; set; }
-    public UserEntity User { get; set; }
-    public string UserId { get; set; }
+    public UserEntity? User { get; set; }
+    public required string UserId { get; set; }
     
 }

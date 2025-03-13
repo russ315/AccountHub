@@ -8,8 +8,7 @@ public class GameEntity:BaseEntity
     
     public required string Name { get; set; }
     public required JsonDocument Metadata { get; set; }
-    [JsonIgnore] 
-    public ICollection<GameAccountEntity>? Accounts { get; set; }
+    [JsonIgnore] public ICollection<GameAccountEntity>? Accounts { get; set; }
     [JsonIgnore]
     public ICollection<GameServiceEntity>? Services { get; set; }
     [JsonIgnore]

@@ -1,10 +1,7 @@
-﻿using System.Security.Authentication;
-using System.Security.Claims;
-using AccountHub.Application.DTOs;
+﻿using AccountHub.Application.DTOs.Authentication;
 using AccountHub.Application.Services.Abstractions;
 using AccountHub.Domain.Entities;
 using AccountHub.Domain.Exceptions;
-using AccountHub.Domain.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,7 +45,7 @@ public class AccountController:ControllerBase
     [Authorize("Admin")]
     public async Task<ActionResult<UserEntity>> AssignRoles(RoleAssignDto model)
     {
-        var result = await _userService.AssignRole(model);
+        await _userService.AssignRole(model);
         
         return Ok();
     }
@@ -68,7 +65,7 @@ public class AccountController:ControllerBase
         Response.Cookies.Delete(AccessTokenCookieName);
         Response.Cookies.Delete(RefreshTokenCookieName);
         
-        return Task.FromResult<ActionResult>(NoContent()); ;
+        return Task.FromResult<ActionResult>(NoContent());
     }
 
     [HttpGet("refresh")]
