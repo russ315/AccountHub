@@ -1,7 +1,5 @@
-﻿using System.Net;
-using AccountHub.Application.DTOs.Game;
+﻿using AccountHub.Application.DTOs.Game;
 using AccountHub.Application.Mapper;
-using AccountHub.Application.Services.Abstractions;
 using AccountHub.Application.Services.Abstractions.Games;
 using AccountHub.Domain.Entities;
 using AccountHub.Domain.Exceptions;
@@ -32,7 +30,7 @@ public class GameService:IGameService
         if(await _gameRepository.GetByName(model.Name) is not null)
             throw new DuplicateEntityException("Game is already exists",$"Game with name: {model.Name} is already exists");
         var gameCreateResult = await _gameRepository.AddGame(game);
-
+        
         return gameCreateResult;
     }
 

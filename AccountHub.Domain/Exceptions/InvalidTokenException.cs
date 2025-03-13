@@ -9,5 +9,5 @@ public class InvalidTokenException:BaseException
         
     }
 
-    public override HttpStatusCode HttpStatusCode { get; set; } = HttpStatusCode.Unauthorized;
+    public override HttpStatusCode HttpStatusCode { get;  } = HttpStatusCode.Unauthorized;
 }

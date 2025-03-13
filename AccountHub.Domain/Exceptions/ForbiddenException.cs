@@ -8,5 +8,5 @@ public class ForbiddenException:BaseException
     {
     }
 
-    public override HttpStatusCode HttpStatusCode { get; set; } = HttpStatusCode.Forbidden;
+    public override HttpStatusCode HttpStatusCode { get; } = HttpStatusCode.Forbidden;
 }

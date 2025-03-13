@@ -9,5 +9,5 @@ public class DuplicateEntityException:BaseException
         
     }
 
-    public override HttpStatusCode HttpStatusCode { get; set; } = HttpStatusCode.Conflict;
+    public override HttpStatusCode HttpStatusCode { get;  } = HttpStatusCode.Conflict;
 }

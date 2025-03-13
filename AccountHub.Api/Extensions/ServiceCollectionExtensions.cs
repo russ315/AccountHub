@@ -68,7 +68,8 @@ public static class ServiceCollectionExtensions
     {
         builder.Services.AddAuthentication(options =>
             {
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
@@ -76,17 +77,22 @@ public static class ServiceCollectionExtensions
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(builder.Configuration["JwtOptions:SecretKey"])),
+                        Encoding.UTF8.GetBytes(builder.Configuration["JwtOptions:SecretKey"]!)),
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = builder.Configuration["JwtOptions:Issuer"],
                     ValidAudience = builder.Configuration["JwtOptions:Audience"],
-                    LifetimeValidator = (before, expires, token, parameters) => expires > DateTime.UtcNow
-
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    LifetimeValidator = ((before, expires, token, parameters) => expires>DateTime.UtcNow )
                 };
                 options.Events = new JwtBearerEvents()
                 {
-                    OnMessageReceived =  (context) =>  Task.FromResult(context.Token = context.Request.Query["access_token"]) 
-
+                    OnMessageReceived =  (context) =>
+                    {
+                         context.Token = context.Request.Cookies["access_token"];
+                         return Task.CompletedTask;
+                    }
                 };
             });
         builder.Services
@@ -101,9 +107,9 @@ public static class ServiceCollectionExtensions
         
         builder.Services.AddAuthorization(options =>
         {
-            options.AddPolicy("Admin", o => o.RequireRole(RoleConsts.Admin));
-            options.AddPolicy("Merchant", o => o.RequireRole(RoleConsts.Merchant));
-            options.AddPolicy("User", o => o.RequireRole(RoleConsts.User));
+            options.AddPolicy("Admin", o => o.RequireRole(RoleConstants.Admin));
+            options.AddPolicy("Merchant", o => o.RequireRole(RoleConstants.Merchant));
+            options.AddPolicy("User", o => o.RequireRole(RoleConstants.User));
 
         });
 

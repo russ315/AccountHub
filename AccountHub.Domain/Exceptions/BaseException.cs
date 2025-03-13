@@ -4,10 +4,13 @@ namespace AccountHub.Domain.Exceptions;
 
 public abstract class BaseException:Exception
 {
-    public abstract HttpStatusCode HttpStatusCode { get; set; }
-    public string Title { get; set; }
+    public abstract HttpStatusCode HttpStatusCode { get;  }
+    public string Title { get; }
+    public object? Details { get; init; }
+    
     public BaseException(string title,string message):base(message)
     {
         Title = title;
+        
     }
 }

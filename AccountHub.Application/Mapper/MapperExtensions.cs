@@ -1,6 +1,5 @@
-﻿using System.Security.Cryptography;
-using System.Text.Json;
-using AccountHub.Application.DTOs;
+﻿
+using AccountHub.Application.DTOs.Authentication;
 using AccountHub.Application.DTOs.Game;
 using AccountHub.Domain.Entities;
 using AccountHub.Domain.Models;

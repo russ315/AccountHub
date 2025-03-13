@@ -1,3 +1,5 @@
-﻿namespace AccountHub.Application.DTOs;
+﻿using Microsoft.AspNetCore.Http;
 
-public record UserRegisterDto(string Username, string Email,string Password,byte[] Image);
+namespace AccountHub.Application.DTOs.Authentication;
+
+public record UserRegisterDto(string Username, string Email,string Password,IFormFile? Image);
