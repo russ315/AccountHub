@@ -1,12 +1,13 @@
 ﻿using AccountHub.Application.DTOs.Game;
 using AccountHub.Application.Services.Abstractions.Games;
 using AccountHub.Application.Services.Game;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AccountHub.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 public class GameAccountController:Controller
 {
     private readonly IGameAccountService _gameAccountService;
@@ -38,12 +39,14 @@ public class GameAccountController:Controller
         return Ok(gameAccounts);
     }
     [HttpDelete("{id}")]
+    [Authorize("Merchant")]
     public async Task<IActionResult> DeleteGameAccountById(long id)
     {
         await _gameAccountService.DeleteGameAccountById(id);
         return Ok();
     }
-    [HttpPost()]
+    [HttpPost]
+    [Authorize("Merchant")]
     public async Task<IActionResult> AddGameAccount(CreateGameAccountDto model)
     {
         var game =await  _gameAccountService.CreateGameAccount(model);

@@ -4,7 +4,6 @@ using AccountHub.Domain.Entities;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers();
 
 builder
     .AddData()
@@ -15,9 +14,12 @@ builder
     .AddIntegrationServices()
     .AddExceptionHandler();
 
+builder.Services.AddControllers();
+
 var app = builder.Build();
 
 app.UseExceptionHandler();
+
 
 app.UseSwagger();
 app.UseSwaggerUI();

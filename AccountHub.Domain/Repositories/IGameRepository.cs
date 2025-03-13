@@ -4,7 +4,7 @@ namespace AccountHub.Domain.Repositories;
 
 public interface IGameRepository
 {
-    Task<GameEntity> GetById(long id,CancellationToken cancellationToken=default);
+    Task<GameEntity?> GetById(long id,CancellationToken cancellationToken=default);
     Task<GameEntity?> GetByName(string name,CancellationToken cancellationToken=default);
 
     Task<GameEntity> AddGame(GameEntity gameEntity,CancellationToken cancellationToken=default);

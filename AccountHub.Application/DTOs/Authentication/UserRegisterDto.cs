@@ -1,3 +1,6 @@
-﻿namespace AccountHub.Application.DTOs;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Http;
 
-public record UserRegisterDto(string Username, string Email,string Password,byte[] Image);
+namespace AccountHub.Application.DTOs;
+
+public record UserRegisterDto(string Username, string Email,string Password,IFormFile? Image);

@@ -8,6 +8,7 @@ using AccountHub.Domain.Exceptions;
 using AccountHub.Domain.Models;
 using AccountHub.Domain.Options;
 using AccountHub.Domain.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -15,18 +16,22 @@ namespace AccountHub.Infrastructure.Services;
 
 public class JwtService : IJwtService
 {
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<UserEntity> _userManager;
     private readonly JwtOptions _options;
 
-    public JwtService(IOptions<JwtOptions> options)
+    public JwtService(IOptions<JwtOptions> options,RoleManager<IdentityRole> roleManager,UserManager<UserEntity> userManager)
     {
+        _roleManager = roleManager;
+        _userManager = userManager;
         _options = options.Value;
     }
 
-    public string GenerateJwtAccessToken(UserEntity user)
+    public async  Task<string> GenerateJwtAccessToken(UserEntity user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
 
-        var claims = GenerateClaims(user);
+        var claims = await GenerateClaims(user);
         var jwtDescriptor = new SecurityTokenDescriptor()
         {
             Subject = new ClaimsIdentity(claims),
@@ -81,15 +86,19 @@ public class JwtService : IJwtService
         var claims = await tokenHandler.ValidateTokenAsync(jwtToken, tokenValidationParameters);
         if (claims.IsValid)
             return claims.ClaimsIdentity.Claims.First(p => p.Type == ClaimTypes.NameIdentifier).Value;
-        
-        throw new InvalidTokenException("Invalid token","Token was not validated");
-    } 
-    private ClaimsIdentity GenerateClaims(UserEntity model)
-         {
-             var claims = new ClaimsIdentity();
-             claims.AddClaim(new Claim(ClaimTypes.Email, model.Email!));
-             claims.AddClaim(new Claim(ClaimTypes.Name, model.UserName!));
-             claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, model.Id));
-             return claims;
-         }
+
+        throw new InvalidTokenException("Invalid token", "Token was not validated");
+    }
+
+    private async Task<ClaimsIdentity> GenerateClaims(UserEntity model)
+    {
+        var claims = new ClaimsIdentity();
+        claims.AddClaim(new Claim(ClaimTypes.Email, model.Email!));
+        claims.AddClaim(new Claim(ClaimTypes.Name, model.UserName!));
+        claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, model.Id));
+        var roles = await _userManager.GetRolesAsync(model);
+        foreach (var role in roles)
+            claims.AddClaim(new Claim(ClaimTypes.Role, role));
+        return claims;
+    }
 }

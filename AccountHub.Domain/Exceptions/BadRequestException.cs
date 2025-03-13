@@ -8,5 +8,5 @@ public class BadRequestException:BaseException
     {
     }
 
-    public override HttpStatusCode HttpStatusCode { get; set; } = HttpStatusCode.BadRequest;
+    public override HttpStatusCode HttpStatusCode { get;  } = HttpStatusCode.BadRequest;
 }

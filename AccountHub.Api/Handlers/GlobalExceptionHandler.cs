@@ -11,12 +11,21 @@ public class GlobalExceptionHandler:IExceptionHandler
         var baseException = exception as BaseException;
         if (baseException == null)
             throw new SystemException();
+        
         var problemDetails = new ProblemDetails
         {
             Status = (int)baseException.HttpStatusCode,
             Detail = baseException.Message,
-            Title = baseException.Title,
+            Title = baseException.Title
         };
+
+        if (baseException.Details is not null)
+        {
+            var description = new Dictionary<string,object>();
+            description.Add("descriptions", baseException.Details);
+            problemDetails.Extensions=description!;
+        }
+        
         httpContext.Response.StatusCode = problemDetails.Status.Value;
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
         
