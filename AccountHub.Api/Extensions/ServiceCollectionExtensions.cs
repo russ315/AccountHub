@@ -51,8 +51,12 @@ public static class ServiceCollectionExtensions
     }
     public static WebApplicationBuilder AddData(this WebApplicationBuilder builder)
     {
-        builder.Services.AddDbContext<DataContext>(options=>options.UseNpgsql
-            (builder.Configuration.GetConnectionString("DefaultConnection")));
+        builder.Services.AddDbContext<DataContext>(options=>
+        {
+            options.UseNpgsql
+                (builder.Configuration.GetConnectionString("DefaultConnection"));
+            options.EnableSensitiveDataLogging();
+        });
         return builder;
         
     }
@@ -120,6 +124,8 @@ public static class ServiceCollectionExtensions
     public static WebApplicationBuilder AddOptions(this WebApplicationBuilder builder)
     {
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
+        builder.Services.Configure<ImageOptions>(builder.Configuration.GetSection("CloudOrdinaryOptions"));
+        
         return builder;
         
     }
@@ -136,12 +142,14 @@ public static class ServiceCollectionExtensions
         builder.Services.AddScoped<IGameAccountRepository, GameAccountRepository>();
         builder.Services.AddScoped<IGameServiceRepository, GameServiceRepository>();
         builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        builder.Services.AddScoped<IAccountImageRepository, AccountImageRepository>();
 
         builder.Services.AddScoped<IGameService, GameService>();
         builder.Services.AddScoped<IGameAccountService, GameAccountService>();
         builder.Services.AddScoped<IGameServiceManager, GameServiceManager>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IJwtService, JwtService>();
+        builder.Services.AddSingleton<IImageService, ImageService>();
 
         return builder;
     }

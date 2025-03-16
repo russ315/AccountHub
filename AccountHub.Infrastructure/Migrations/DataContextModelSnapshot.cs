@@ -38,9 +38,6 @@ namespace AccountHub.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsMain")
-                        .HasColumnType("boolean");
-
                     b.Property<int>("Order")
                         .HasColumnType("integer");
 

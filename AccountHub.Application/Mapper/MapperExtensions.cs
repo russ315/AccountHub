@@ -1,4 +1,5 @@
 ﻿
+using System.Text.Json;
 using AccountHub.Application.DTOs.Authentication;
 using AccountHub.Application.DTOs.Game;
 using AccountHub.Domain.Entities;
@@ -21,7 +22,7 @@ public static class MapperExtensions
         return new GameAccountEntity()
         {
             Price = model.Price,
-            Characteristics= model.Characteristics,
+            Characteristics= JsonDocument.Parse(model.Characteristics),
             SellerId = model.SellerId,
             CurrentOwnerId = model.CurrentOwnerId,
             Status = (AccountStatus)model.Status,

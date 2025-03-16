@@ -46,7 +46,7 @@ public class GameAccountController:Controller
     }
     [HttpPost]
     [Authorize("Merchant")]
-    public async Task<IActionResult> AddGameAccount(CreateGameAccountDto model)
+    public async Task<IActionResult> AddGameAccount([FromForm] CreateGameAccountDto model)
     {
         var game =await  _gameAccountService.CreateGameAccount(model);
         return Ok(game);

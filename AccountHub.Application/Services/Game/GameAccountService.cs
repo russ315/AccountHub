@@ -4,16 +4,21 @@ using AccountHub.Application.Services.Abstractions.Games;
 using AccountHub.Domain.Entities;
 using AccountHub.Domain.Exceptions;
 using AccountHub.Domain.Repositories;
+using AccountHub.Domain.Services;
 
 namespace AccountHub.Application.Services.Game;
 
 public class GameAccountService:IGameAccountService
 {
     private readonly IGameAccountRepository _gameAccountRepository;
+    private readonly IAccountImageRepository _accountImageRepository;
+    private readonly IImageService _imageService;
 
-    public GameAccountService(IGameAccountRepository gameAccountRepository)
+    public GameAccountService(IGameAccountRepository gameAccountRepository,IAccountImageRepository accountImageRepository,IImageService imageService)
     {
         _gameAccountRepository = gameAccountRepository;
+        _accountImageRepository = accountImageRepository;
+        _imageService = imageService;
     }
     public async Task<GameAccountEntity> GetGameAccountById(long id)
     {
@@ -36,12 +41,23 @@ public class GameAccountService:IGameAccountService
         
     }
 
-    public Task<GameAccountEntity> CreateGameAccount(CreateGameAccountDto model)
+    public async Task<GameAccountEntity> CreateGameAccount(CreateGameAccountDto model)
     {
         var entity = model.ToEntity();
         
-        var createGameAccountResult = _gameAccountRepository.AddGameAccount(entity);
-        
+        var createGameAccountResult = await _gameAccountRepository.AddGameAccount(entity);
+        for (int i = 0; i < model.Images.Count; i++)
+        {
+            var imageUrl = await _imageService
+                .UploadImage(Guid.NewGuid().ToString(), model.Images[i].OpenReadStream());
+            var accountImage = new AccountImageEntity
+            {
+                GameAccountId = createGameAccountResult.Id,
+                ImageUrl = imageUrl,
+                Order = i
+            };
+            await _accountImageRepository.AddAccountImage(accountImage);
+        }
         return createGameAccountResult;
     }
 

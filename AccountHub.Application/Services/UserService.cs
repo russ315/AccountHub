@@ -16,6 +16,22 @@ public class UserService : IUserService
     private readonly IJwtService _jwtService;
     private readonly UserManager<UserEntity> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly SignInManager<UserEntity> _signInManager;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IImageService _imageService;
+
+    public UserService(IJwtService jwtService, UserManager<UserEntity> userManager
+        , RoleManager<IdentityRole> roleManager, SignInManager<UserEntity> signInManager,
+        IRefreshTokenRepository refreshTokenRepository,IImageService imageService)
+    {
+        _jwtService = jwtService;
+        _userManager = userManager;
+        _roleManager = roleManager;
+        _signInManager = signInManager;
+        _refreshTokenRepository = refreshTokenRepository;
+        _imageService = imageService;
+    }
+   
 
     public async Task<string> GetRefreshToken(string accessToken, string deviceId)
     {
@@ -35,20 +51,8 @@ public class UserService : IUserService
         return token;
     }
 
-    private readonly SignInManager<UserEntity> _signInManager;
+   
 
-    private readonly IRefreshTokenRepository _refreshTokenRepository;
-
-    public UserService(IJwtService jwtService, UserManager<UserEntity> userManager
-        , RoleManager<IdentityRole> roleManager, SignInManager<UserEntity> signInManager,
-        IRefreshTokenRepository refreshTokenRepository)
-    {
-        _jwtService = jwtService;
-        _userManager = userManager;
-        _roleManager = roleManager;
-        _signInManager = signInManager;
-        _refreshTokenRepository = refreshTokenRepository;
-    }
 
     public async Task<UserEntity> Register(UserRegisterDto userRegisterDto)
     {
@@ -66,6 +70,11 @@ public class UserService : IUserService
             };
         }
 
+        if (userRegisterDto.Image != null)
+        {
+            var fileName = userRegisterDto.Username + userRegisterDto.Email;
+            userEntity.ImageUrl= await _imageService.UploadImage(fileName,userRegisterDto.Image.OpenReadStream());
+        }
         await _userManager.AddToRoleAsync(userEntity, RoleConstants.User);
         await _signInManager.SignInAsync(userEntity, false);
         return userEntity;
@@ -128,5 +137,17 @@ public class UserService : IUserService
     {
         var roles =await _roleManager.Roles.ToListAsync();
         return roles;
+    }
+
+    public async Task<string> ChangeUserImage(UserChangeImageDto userChangeImageDto)
+    {
+        var user = await _userManager.FindByNameAsync(userChangeImageDto.UserName);
+        if(user is null)
+            throw new EntityNotFoundException("Invalid data", "Invalid username");
+        var fileName = user.UserName + user.Email;
+        var url = await _imageService.UploadImage(fileName, userChangeImageDto.Image.OpenReadStream());
+        user.ImageUrl = url;
+        await _userManager.UpdateAsync(user);
+        return url;
     }
 }

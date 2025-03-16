@@ -24,11 +24,10 @@ public class AccountController:ControllerBase
     public async Task<ActionResult<UserEntity>> Register([FromForm] UserRegisterDto model)
     {
         if (HttpContext.User.Identity?.IsAuthenticated ?? false)
-            return BadRequest("You are already logged in");
-        var user = await _userService.Register(model);
-
-        await AddTokenCookies(user);
-        return Ok(user);
+            return BadRequest("You are already logged in"); 
+        await _userService.Register(model);
+        
+        return Ok("Please check your email and confirm your account");
     }
     [HttpPost("login")]
     public async Task<ActionResult<UserEntity>> Login(UserLoginDto model)
@@ -49,6 +48,16 @@ public class AccountController:ControllerBase
         
         return Ok();
     }
+    
+    [HttpPost("change-image")]
+    [Authorize("Admin")]
+    public async Task<ActionResult<UserEntity>> AssignImage([FromForm]UserChangeImageDto model)
+    {
+        await _userService.ChangeUserImage(model);
+        
+        return Ok();
+    }
+    
     [HttpGet("get-roles")]
     [Authorize("Admin")]
     public async Task<ActionResult<UserEntity>> GetRoles()

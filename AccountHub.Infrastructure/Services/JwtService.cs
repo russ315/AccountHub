@@ -93,6 +93,7 @@ public class JwtService : IJwtService
         claims.AddClaim(new Claim(ClaimTypes.Name, model.UserName!));
         claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, model.Id));
         var roles = await _userManager.GetRolesAsync(model);
+        
         foreach (var role in roles)
             claims.AddClaim(new Claim(ClaimTypes.Role, role));
         return claims;

@@ -15,7 +15,7 @@ public class GameAccountRepository:IGameAccountRepository
     }
     public async Task<GameAccountEntity?> GetAccountById(long id, CancellationToken cancellationToken=default)
     {
-        var gameAccount = await _context.GameAccounts.FirstOrDefaultAsync(p=>p.Id==id, cancellationToken);
+        var gameAccount = await _context.GameAccounts.Include(p=>p.Images).FirstOrDefaultAsync(p=>p.Id==id, cancellationToken);
         return gameAccount;
     }
 

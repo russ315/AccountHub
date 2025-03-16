@@ -14,4 +14,5 @@ public interface IUserService
     Task<bool> CheckRefreshToken(string refreshToken,string accessToken,string deviceId);
     Task<bool> AssignRole(RoleAssignDto model);
     Task<List<IdentityRole>> GetAllRoles();
+    Task<string> ChangeUserImage(UserChangeImageDto userChangeImageDto);
 }
