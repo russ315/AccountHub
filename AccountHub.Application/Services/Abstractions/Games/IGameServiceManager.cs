@@ -5,11 +5,11 @@ namespace AccountHub.Application.Services.Abstractions.Games;
 
 public interface IGameServiceManager
 {
-    Task<GameServiceEntity> GetGameServiceById(long id);
-    Task<IEnumerable<GameServiceEntity>> GetGameServicesByUsername(string username);
-    Task<IEnumerable<GameServiceEntity>> GetGameServicesByGame(string gameName);
+    Task<GameServiceEntity> GetGameServiceById(long id, CancellationToken cancellationToken);
+    Task<IEnumerable<GameServiceEntity>> GetGameServicesByUsername(string username, CancellationToken cancellationToken);
+    Task<IEnumerable<GameServiceEntity>> GetGameServicesByGame(string gameName, CancellationToken cancellationToken);
     Task<GameServiceEntity> CreateGameService(CreateGameServiceDto model);
-    Task DeleteGameServiceById(long id);
 
+    Task DeleteGameServiceById(long id);
 }
 

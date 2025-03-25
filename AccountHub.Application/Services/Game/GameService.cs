@@ -15,9 +15,9 @@ public class GameService:IGameService
     {
         _gameRepository = gameRepository;
     }
-    public async Task<GameEntity> GetGameById(long id)
+    public async Task<GameEntity> GetGameById(long id, CancellationToken cancellationToken)
     {
-        var game = await _gameRepository.GetById(id);
+        var game = await _gameRepository.GetById(id,cancellationToken);
         if (game is null)
             throw new EntityNotFoundException("Game is not found",$"Game with id: {id} is not found");
            
@@ -27,10 +27,7 @@ public class GameService:IGameService
     public async Task<GameEntity> AddGame(CreateGameDto model)
     {
         var game = model.ToEntity();
-        if(await _gameRepository.GetByName(model.Name) is not null)
-            throw new DuplicateEntityException("Game is already exists",$"Game with name: {model.Name} is already exists");
         var gameCreateResult = await _gameRepository.AddGame(game);
-        
         return gameCreateResult;
     }
 

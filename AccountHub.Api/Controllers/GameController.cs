@@ -18,7 +18,7 @@ public class GameController:Controller
     [HttpGet("{gameId}")]
     public async Task<IActionResult> GetGame(long gameId)
     {
-        var game =await  _gameService.GetGameById(gameId);
+        var game =await  _gameService.GetGameById(gameId, HttpContext.RequestAborted);
 
         return Ok(game);
     }

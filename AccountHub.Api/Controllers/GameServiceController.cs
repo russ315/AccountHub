@@ -17,7 +17,7 @@ public class GameServiceController:Controller
     [HttpGet("{id}")]
     public async Task<IActionResult> GetGameService(long id)
     {
-        var gameService = await _gameServiceManager.GetGameServiceById(id);
+        var gameService = await _gameServiceManager.GetGameServiceById(id, HttpContext.RequestAborted);
         return Ok(gameService);
     }
     [HttpDelete("{id}")]
@@ -31,14 +31,14 @@ public class GameServiceController:Controller
     [HttpGet("get-by-username/{username}")]
     public async Task<IActionResult> GetGameServicesOfUser(string username)
     {
-        var gameServices = await _gameServiceManager.GetGameServicesByUsername(username);
+        var gameServices = await _gameServiceManager.GetGameServicesByUsername(username, HttpContext.RequestAborted);
         
         return Ok(gameServices);
     }
     [HttpGet("get-by-game/{game}")]
     public async Task<IActionResult> GetGameServicesOfGame(string game)
     {
-        var gameServices = await _gameServiceManager.GetGameServicesByGame(game);
+        var gameServices = await _gameServiceManager.GetGameServicesByGame(game,HttpContext.RequestAborted);
         
         return Ok(gameServices);
     }

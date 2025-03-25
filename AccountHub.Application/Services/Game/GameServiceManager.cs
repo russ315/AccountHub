@@ -16,22 +16,24 @@ public class GameServiceManager:IGameServiceManager
         _gameServiceRepository = gameServiceRepository;
     }
     
-    public async Task<GameServiceEntity> GetGameServiceById(long id)
+    public async Task<GameServiceEntity> GetGameServiceById(long id, CancellationToken cancellationToken)
     {
-        var game = await _gameServiceRepository.GetAccountServiceById(id);
+        var game = await _gameServiceRepository.GetAccountServiceById(id, cancellationToken);
         if(game is null)
             throw new EntityNotFoundException("Game not found",$"Game with id: {id} is not found");
         return game;
     }
 
-    public async Task<IEnumerable<GameServiceEntity>> GetGameServicesByUsername(string username)
+    public async Task<IEnumerable<GameServiceEntity>> GetGameServicesByUsername(string username,
+        CancellationToken cancellationToken)
     {
-        var services = await _gameServiceRepository.GetAccountServicesByUsername(username);
+        var services = await _gameServiceRepository.GetAccountServicesByUsername(username, cancellationToken);
         return services;    }
 
-    public async Task<IEnumerable<GameServiceEntity>> GetGameServicesByGame(string gameName)
+    public async Task<IEnumerable<GameServiceEntity>> GetGameServicesByGame(string gameName,
+        CancellationToken cancellationToken)
     {
-        var services = await _gameServiceRepository.GetAccountServicesByGame(gameName);
+        var services = await _gameServiceRepository.GetAccountServicesByGame(gameName, cancellationToken);
         return services;    }
 
     public async Task<GameServiceEntity> CreateGameService(CreateGameServiceDto model)

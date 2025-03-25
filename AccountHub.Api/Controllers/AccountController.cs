@@ -25,7 +25,7 @@ public class AccountController:ControllerBase
     {
         if (HttpContext.User.Identity?.IsAuthenticated ?? false)
             return BadRequest("You are already logged in"); 
-        await _userService.Register(model);
+        await _userService.Register(model,HttpContext.RequestAborted);
         
         return Ok("Please check your email and confirm your account");
     }
@@ -53,7 +53,7 @@ public class AccountController:ControllerBase
     [Authorize("Admin")]
     public async Task<ActionResult<UserEntity>> AssignImage([FromForm]UserChangeImageDto model)
     {
-        await _userService.ChangeUserImage(model);
+        await _userService.ChangeUserImage(model,HttpContext.RequestAborted);
         
         return Ok();
     }
@@ -62,7 +62,7 @@ public class AccountController:ControllerBase
     [Authorize("Admin")]
     public async Task<ActionResult<UserEntity>> GetRoles()
     {
-        var result = await _userService.GetAllRoles();
+        var result = await _userService.GetAllRoles(HttpContext.RequestAborted);
         
         return Ok(result);
     }
@@ -85,7 +85,7 @@ public class AccountController:ControllerBase
             throw new BadRequestException("Refresh token is invalid","Refresh token cookie is required");
         var accessToken = Request.Cookies[AccessTokenCookieName]!;
         var deviceId = Request.Headers[DeviceIdHeaderName];
-        var refreshTokenIsValid = await _userService.CheckRefreshToken(refreshToken,accessToken,deviceId!);
+        var refreshTokenIsValid = await _userService.CheckRefreshToken(refreshToken,accessToken,deviceId!,HttpContext.RequestAborted);
         if (!refreshTokenIsValid)
             throw new BadRequestException("Refresh token is invalid","Refresh token cookie is invalid.Please log in again");
 

@@ -13,9 +13,9 @@ public class RefreshTokenRepository:IRefreshTokenRepository
     {
         _context = context;
     }
-    public async Task<RefreshTokenEntity?> GetRefreshToken(string userId, string deviceId)
+    public async Task<RefreshTokenEntity?> GetRefreshToken(string userId, string deviceId,CancellationToken cancellationToken)
     {
-        var refreshToken =await _context.RefreshTokens.SingleOrDefaultAsync(x => x.UserId == userId && x.DeviceId == deviceId);
+        var refreshToken =await _context.RefreshTokens.SingleOrDefaultAsync(x => x.UserId == userId && x.DeviceId == deviceId,cancellationToken);
         return refreshToken;
     }
 

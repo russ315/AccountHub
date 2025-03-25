@@ -19,21 +19,21 @@ public class GameAccountController:Controller
     [HttpGet("{id}")]
     public async Task<IActionResult> GetGameAccount(long id)
     {
-        var gameAccount = await _gameAccountService.GetGameAccountById(id);
+        var gameAccount = await _gameAccountService.GetGameAccountById(id,HttpContext.RequestAborted);
         return Ok(gameAccount);
     }
     
     [HttpGet("get-by-username/{username}")]
     public async Task<IActionResult> GetGameAccountsOfUser(string username)
     {
-        var gameAccounts = await _gameAccountService.GetGameAccountsByUsername(username);
+        var gameAccounts = await _gameAccountService.GetGameAccountsByUsername(username, HttpContext.RequestAborted);
         
         return Ok(gameAccounts);
     }
     [HttpGet("get-by-game/{game}")]
     public async Task<IActionResult> GetGameAccountsOfGame(string game)
     {
-        var gameAccounts = await _gameAccountService.GetGameAccountsByGame(game);
+        var gameAccounts = await _gameAccountService.GetGameAccountsByGame(game,HttpContext.RequestAborted);
         
         return Ok(gameAccounts);
     }
@@ -48,7 +48,7 @@ public class GameAccountController:Controller
     [Authorize("Merchant")]
     public async Task<IActionResult> AddGameAccount([FromForm] CreateGameAccountDto model)
     {
-        var game =await  _gameAccountService.CreateGameAccount(model);
+        var game =await  _gameAccountService.CreateGameAccount(model,HttpContext.RequestAborted);
         return Ok(game);
 
 

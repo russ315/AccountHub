@@ -5,8 +5,8 @@ namespace AccountHub.Application.Services.Abstractions.Games;
 
 public interface IGameService
 {
-    Task<GameEntity> GetGameById(long id);
+    Task<GameEntity> GetGameById(long id, CancellationToken cancellationToken);
     Task<GameEntity> AddGame(CreateGameDto model);
+
     Task DeleteGameById(long id);
-    
 }

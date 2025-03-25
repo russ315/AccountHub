@@ -1,4 +1,5 @@
-﻿using AccountHub.Domain.Options;
+﻿using AccountHub.Domain.Exceptions;
+using AccountHub.Domain.Options;
 using AccountHub.Domain.Services;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
@@ -16,7 +17,7 @@ public class ImageService:IImageService
         var account = new Account(imageOptions.CloudName, imageOptions.ApiKey, imageOptions.SecretKey);
         _cloudinary = new Cloudinary(account) { Api = { Secure = true } };
     }
-    public async Task<string> UploadImage(string fileName,Stream file)
+    public async Task<string> UploadImage(string fileName,Stream file,CancellationToken cancellationToken)
     {
         var image = new FileDescription(fileName, file);
         var imageUploadParams = new ImageUploadParams()
@@ -30,9 +31,9 @@ public class ImageService:IImageService
                 .Quality("auto")
         };
         
-        var result = await _cloudinary.UploadAsync(imageUploadParams);
+        var result = await _cloudinary.UploadAsync(imageUploadParams,cancellationToken);
         if(result.Error != null)
-            throw new Exception(result.Error.Message);
+            throw new ServiceException("Image uploading error",result.Error.Message);
         return result.Url.ToString(); 
     }
 

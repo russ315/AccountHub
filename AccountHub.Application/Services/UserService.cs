@@ -54,12 +54,8 @@ public class UserService : IUserService
    
 
 
-    public async Task<UserEntity> Register(UserRegisterDto userRegisterDto)
+    public async Task<UserEntity> Register(UserRegisterDto userRegisterDto,CancellationToken cancellationToken)
     {
-        if (await _userManager.FindByEmailAsync(userRegisterDto.Email) != null)
-            throw new DuplicateEntityException("User is already registered",
-                $"User with email {userRegisterDto.Email} already registered");
-
         var userEntity = userRegisterDto.ToEntity();
         var userCreateResult = await _userManager.CreateAsync(userEntity, userRegisterDto.Password);
         if (!userCreateResult.Succeeded)
@@ -73,7 +69,7 @@ public class UserService : IUserService
         if (userRegisterDto.Image != null)
         {
             var fileName = userRegisterDto.Username + userRegisterDto.Email;
-            userEntity.ImageUrl= await _imageService.UploadImage(fileName,userRegisterDto.Image.OpenReadStream());
+            userEntity.ImageUrl= await _imageService.UploadImage(fileName,userRegisterDto.Image.OpenReadStream(),cancellationToken);
         }
         await _userManager.AddToRoleAsync(userEntity, RoleConstants.User);
         await _signInManager.SignInAsync(userEntity, false);
@@ -109,10 +105,11 @@ public class UserService : IUserService
         return user!;
     }
 
-    public async Task<bool> CheckRefreshToken(string refreshToken, string accessToken, string deviceId)
+    public async Task<bool> CheckRefreshToken(string refreshToken, string accessToken, string deviceId,
+        CancellationToken cancellationToken)
     {
         var userId = await _jwtService.GetUserIdFromExpiredToken(accessToken);
-        var refreshTokenEntity = await _refreshTokenRepository.GetRefreshToken(userId, deviceId);
+        var refreshTokenEntity = await _refreshTokenRepository.GetRefreshToken(userId, deviceId, cancellationToken);
         if (refreshTokenEntity?.Token != refreshToken || refreshTokenEntity.Expires < DateTime.Now)
             return false;
 
@@ -133,19 +130,20 @@ public class UserService : IUserService
         return true;
     }
 
-    public async Task<List<IdentityRole>> GetAllRoles()
+    public async Task<List<IdentityRole>> GetAllRoles(CancellationToken cancellationToken)
     {
-        var roles =await _roleManager.Roles.ToListAsync();
+        var roles =await _roleManager.Roles.ToListAsync(cancellationToken);
         return roles;
     }
 
-    public async Task<string> ChangeUserImage(UserChangeImageDto userChangeImageDto)
+    public async Task<string> ChangeUserImage(UserChangeImageDto userChangeImageDto,
+        CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByNameAsync(userChangeImageDto.UserName);
         if(user is null)
             throw new EntityNotFoundException("Invalid data", "Invalid username");
         var fileName = user.UserName + user.Email;
-        var url = await _imageService.UploadImage(fileName, userChangeImageDto.Image.OpenReadStream());
+        var url = await _imageService.UploadImage(fileName, userChangeImageDto.Image.OpenReadStream(),cancellationToken);
         user.ImageUrl = url;
         await _userManager.UpdateAsync(user);
         return url;

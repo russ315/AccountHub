@@ -20,28 +20,28 @@ public class GameAccountService:IGameAccountService
         _accountImageRepository = accountImageRepository;
         _imageService = imageService;
     }
-    public async Task<GameAccountEntity> GetGameAccountById(long id)
+    public async Task<GameAccountEntity> GetGameAccountById(long id,CancellationToken cancellationToken)
     {
-        var game = await _gameAccountRepository.GetAccountById(id);
+        var game = await _gameAccountRepository.GetAccountById(id,cancellationToken);
         if(game is null)
             throw new EntityNotFoundException("GameAccount is not found",$"GameAccount with id: {id} is not found");
         return game;
     }
 
-    public async Task<IEnumerable<GameAccountEntity>> GetGameAccountsByUsername(string username)
+    public async Task<IEnumerable<GameAccountEntity>> GetGameAccountsByUsername(string username,CancellationToken cancellationToken)
     {
-        var games = await _gameAccountRepository.GetAccountsByUsername(username);
+        var games = await _gameAccountRepository.GetAccountsByUsername(username,cancellationToken);
         return games;
     }
 
-    public async Task<IEnumerable<GameAccountEntity>> GetGameAccountsByGame(string gameName)
+    public async Task<IEnumerable<GameAccountEntity>> GetGameAccountsByGame(string gameName,CancellationToken cancellationToken)
     {
-        var games = await _gameAccountRepository.GetAccountsByGame(gameName);
+        var games = await _gameAccountRepository.GetAccountsByGame(gameName,cancellationToken);
         return games;
         
     }
 
-    public async Task<GameAccountEntity> CreateGameAccount(CreateGameAccountDto model)
+    public async Task<GameAccountEntity> CreateGameAccount(CreateGameAccountDto model,CancellationToken cancellationToken)
     {
         var entity = model.ToEntity();
         
@@ -49,7 +49,7 @@ public class GameAccountService:IGameAccountService
         for (int i = 0; i < model.Images.Count; i++)
         {
             var imageUrl = await _imageService
-                .UploadImage(Guid.NewGuid().ToString(), model.Images[i].OpenReadStream());
+                .UploadImage(Guid.NewGuid().ToString(), model.Images[i].OpenReadStream(),cancellationToken);
             var accountImage = new AccountImageEntity
             {
                 GameAccountId = createGameAccountResult.Id,
