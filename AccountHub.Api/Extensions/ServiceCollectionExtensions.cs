@@ -106,8 +106,11 @@ public static class ServiceCollectionExtensions
             .AddRoleManager<RoleManager<IdentityRole>>()
             .AddSignInManager<SignInManager<UserEntity>>()
             .AddEntityFrameworkStores<DataContext>();
-        
-        
+
+        builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
+        {
+            options.TokenLifespan = TimeSpan.FromHours(1);
+        });
         
         builder.Services.AddAuthorization(options =>
         {
@@ -125,7 +128,9 @@ public static class ServiceCollectionExtensions
     {
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
         builder.Services.Configure<ImageOptions>(builder.Configuration.GetSection("CloudOrdinaryOptions"));
-        
+        builder.Services.Configure<ClientAppOptions>(builder.Configuration.GetSection("ClientAppOptions"));
+        builder.Services.Configure<MailjetOptions>(builder.Configuration.GetSection("MailjetOptions"));
+
         return builder;
         
     }
@@ -150,6 +155,7 @@ public static class ServiceCollectionExtensions
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IJwtService, JwtService>();
         builder.Services.AddSingleton<IImageService, ImageService>();
+        builder.Services.AddSingleton<IMailjetService, MailjetService>();
 
         return builder;
     }

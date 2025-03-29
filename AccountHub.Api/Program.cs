@@ -1,7 +1,6 @@
 using AccountHub.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder
     .AddData()
     .AddSwagger()

@@ -4,7 +4,6 @@ using AccountHub.Domain.Entities;
 using AccountHub.Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 namespace AccountHub.Api.Controllers;
 
 [ApiController]
@@ -95,7 +94,32 @@ public class AccountController:ControllerBase
         return Ok();
     }
 
+    [HttpGet("confirm-email")] 
+    public async Task<ActionResult<UserEntity>> ConfirmEmail(ConfirmEmailDto model)
+    {
 
+        if(await _userService.ConfirmEmailAddress(model))
+            return Ok();
+        return BadRequest();
+        
+    }
+    
+    [HttpGet("forgot-password")]
+    public async Task<IActionResult> ForgotPassword(string email)
+    {
+        await _userService.ForgotPassword(email);
+        
+        return Ok("If an account exists, a password reset email has been sent.");
+    }
+    
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword(ResetPasswordDto model)
+    {
+        var result = await _userService.ResetPassword(model);
+        if(result)
+            return Ok();
+        return BadRequest();
+    }
     private async Task AddTokenCookies(UserEntity user)
     {
         var deviceId = Request.Headers[DeviceIdHeaderName].ToString();

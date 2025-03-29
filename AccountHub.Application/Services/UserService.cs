@@ -1,13 +1,18 @@
-﻿using AccountHub.Application.DTOs.Authentication;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using AccountHub.Application.DTOs.Authentication;
 using AccountHub.Application.Services.Abstractions;
 using AccountHub.Application.Mapper;
 using AccountHub.Domain.Entities;
 using AccountHub.Domain.Exceptions;
 using AccountHub.Domain.Models;
+using AccountHub.Domain.Options;
 using AccountHub.Domain.Repositories;
 using AccountHub.Domain.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace AccountHub.Application.Services;
 
@@ -19,10 +24,12 @@ public class UserService : IUserService
     private readonly SignInManager<UserEntity> _signInManager;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly IImageService _imageService;
-
+    private readonly IMailjetService _mailSenderService;
+    private readonly ClientAppOptions _clientAppOptions;
     public UserService(IJwtService jwtService, UserManager<UserEntity> userManager
         , RoleManager<IdentityRole> roleManager, SignInManager<UserEntity> signInManager,
-        IRefreshTokenRepository refreshTokenRepository,IImageService imageService)
+        IRefreshTokenRepository refreshTokenRepository,IImageService imageService
+        ,IMailjetService mailSenderService, IOptions<ClientAppOptions> clientAppOptions)
     {
         _jwtService = jwtService;
         _userManager = userManager;
@@ -30,6 +37,8 @@ public class UserService : IUserService
         _signInManager = signInManager;
         _refreshTokenRepository = refreshTokenRepository;
         _imageService = imageService;
+        _mailSenderService = mailSenderService;
+        _clientAppOptions = clientAppOptions.Value;
     }
    
 
@@ -56,6 +65,8 @@ public class UserService : IUserService
 
     public async Task<UserEntity> Register(UserRegisterDto userRegisterDto,CancellationToken cancellationToken)
     {
+        if (await _userManager.FindByEmailAsync(userRegisterDto.Email) != null)
+            throw new DuplicateEntityException("Duplicate entity","Email address already exists");
         var userEntity = userRegisterDto.ToEntity();
         var userCreateResult = await _userManager.CreateAsync(userEntity, userRegisterDto.Password);
         if (!userCreateResult.Succeeded)
@@ -65,14 +76,14 @@ public class UserService : IUserService
                 Details = userCreateResult.Errors
             };
         }
+        await SendConfirmEmail(userEntity);
 
         if (userRegisterDto.Image != null)
         {
             var fileName = userRegisterDto.Username + userRegisterDto.Email;
             userEntity.ImageUrl= await _imageService.UploadImage(fileName,userRegisterDto.Image.OpenReadStream(),cancellationToken);
         }
-        await _userManager.AddToRoleAsync(userEntity, RoleConstants.User);
-        await _signInManager.SignInAsync(userEntity, false);
+        
         return userEntity;
     }
 
@@ -130,6 +141,48 @@ public class UserService : IUserService
         return true;
     }
 
+    public async Task<bool> ConfirmEmailAddress(ConfirmEmailDto model)
+    {
+        var decodedToken = Uri.UnescapeDataString(model.Token);
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        if(user is null)
+            throw new EntityNotFoundException("Invalid data", "Invalid email");
+        var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+        if(!result.Succeeded)
+            throw new BadRequestException("Invalid data", "Invalid token")
+            {
+                Details = result.Errors
+            };
+        await _userManager.AddToRoleAsync(user, RoleConstants.User);
+        await _signInManager.SignInAsync(user, false);
+        return true;
+    }
+
+   
+    public async Task<string> ForgotPassword(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+            return default;
+        await SendResetPasswordEmail(user);
+        return default;
+    }
+
+    public async Task<bool> ResetPassword(ResetPasswordDto model)
+    {
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        if(user is null)
+            throw new EntityNotFoundException("Invalid data", "Invalid email");
+        var decodedToken = Uri.UnescapeDataString(model.Token);
+        var result = await _userManager.ResetPasswordAsync(user, decodedToken,model.NewPassword);
+        if(!result.Succeeded)
+            throw new BadRequestException("Invalid data", "Invalid token")
+            {
+                Details = result.Errors
+            };
+        return true;
+    }
+
     public async Task<List<IdentityRole>> GetAllRoles(CancellationToken cancellationToken)
     {
         var roles =await _roleManager.Roles.ToListAsync(cancellationToken);
@@ -147,5 +200,24 @@ public class UserService : IUserService
         user.ImageUrl = url;
         await _userManager.UpdateAsync(user);
         return url;
+    }
+
+    private async Task<string> SendConfirmEmail(UserEntity userEntity)
+    {
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(userEntity);
+        var parameters = new Dictionary<string, object>();
+        parameters.Add("username", userEntity.UserName!);
+        parameters.Add("url", $"{_clientAppOptions.Url}/confirm-email?email={userEntity.Email}&token={Uri.EscapeDataString(token)}");
+        return await _mailSenderService.SendEmailAsync(userEntity.Email!,"Confirm email", TemplateIdConstants.EmailConfirmationTemplate,parameters);
+
+    }
+    private async Task<string> SendResetPasswordEmail(UserEntity userEntity)
+    {
+        var token = await _userManager.GeneratePasswordResetTokenAsync(userEntity);
+        var parameters = new Dictionary<string, object>();
+        parameters.Add("username", userEntity.UserName!);
+        parameters.Add("url", $"{_clientAppOptions.Url}/reset-password?email={userEntity.Email}&token={Uri.EscapeDataString(token)}");
+        return await _mailSenderService.SendEmailAsync(userEntity.Email!,"Confirm email", TemplateIdConstants.ResetPasswordTemplate,parameters);
+
     }
 }

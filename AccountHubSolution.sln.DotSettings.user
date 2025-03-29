@@ -18,4 +18,5 @@
   &lt;Assembly Path="C:\Users\Ruslan\.nuget\packages\cloudinarydotnet\1.27.4\lib\netstandard2.0\CloudinaryDotNet.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\Ruslan\.nuget\packages\microsoft.aspnetcore.identity.entityframeworkcore\8.0.13\lib\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/Initialized/@EntryValue">True</s:Boolean>
 	</wpf:ResourceDictionary>

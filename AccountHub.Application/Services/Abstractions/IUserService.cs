@@ -17,4 +17,8 @@ public interface IUserService
     Task<UserEntity> Register(UserRegisterDto userRegisterDto, CancellationToken cancellationToken);
     Task<UserEntity> Login(UserLoginDto userLoginDto);
     Task<bool> AssignRole(RoleAssignDto model);
+    Task<bool> ConfirmEmailAddress(ConfirmEmailDto model);
+    Task<bool> ResetPassword(ResetPasswordDto model);
+    
+    Task<string> ForgotPassword(string email);
 }
