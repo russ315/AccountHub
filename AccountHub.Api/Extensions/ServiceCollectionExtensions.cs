@@ -12,11 +12,18 @@ using AccountHub.Domain.Services;
 using AccountHub.Infrastructure.Data;
 using AccountHub.Infrastructure.Repositories;
 using AccountHub.Infrastructure.Services;
+using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AccountHub.Api.Extensions;
 
@@ -159,7 +166,42 @@ public static class ServiceCollectionExtensions
 
         return builder;
     }
+    public static WebApplicationBuilder AddRateLimiting(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddMemoryCache();
+        builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+        builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
+        builder.Services.AddInMemoryRateLimiting();
+        builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+        
+        return builder;
+    }
 
-    
+    public static WebApplicationBuilder AddHealthChecks(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddHealthChecks()
+            .AddDbContextCheck<DataContext>("Database")
+            .AddCheck("Self", () => HealthCheckResult.Healthy());
 
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddSecurityHeaders(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddAntiforgery(options =>
+        {
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.Cookie.SameSite = SameSiteMode.Strict;
+            options.Cookie.HttpOnly = true;
+        });
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddValidation(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddFluentValidationAutoValidation();
+        builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+        return builder;
+    }
 }
