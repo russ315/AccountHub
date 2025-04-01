@@ -237,6 +237,38 @@ public class GameAccountEntity : BaseEntity
         _domainEvents.Clear();
     }
 
+    public void Update(JsonDocument characteristics, decimal price, AccountStatus status)
+    {
+        var hasChanges = false;
+        
+        if (Characteristics != characteristics)
+        {
+            Characteristics = characteristics;
+            hasChanges = true;
+        }
+
+        if (Price != price)
+        {
+            var oldPrice = Price;
+            Price = price;
+            hasChanges = true;
+            _domainEvents.Add(new GameAccountUpdatedEvent(Id));
+        }
+
+        if (Status != status)
+        {
+            var oldStatus = Status;
+            Status = status;
+            hasChanges = true;
+            _domainEvents.Add(new GameAccountStatusChangedEvent(Id, oldStatus, status));
+        }
+
+        if (hasChanges)
+        {
+            _domainEvents.Add(new GameAccountUpdatedEvent(Id));
+        }
+    }
+
     // Helper DTO for serialization
     private class CredentialDto
     {

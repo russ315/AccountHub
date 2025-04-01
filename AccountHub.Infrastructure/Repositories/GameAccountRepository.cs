@@ -1,5 +1,4 @@
 ﻿using AccountHub.Domain.Entities;
-using AccountHub.Domain.Exceptions;
 using AccountHub.Domain.Repositories;
 using AccountHub.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -46,27 +45,21 @@ public class GameAccountRepository:IGameAccountRepository
 
     public async Task<GameAccountEntity> AddGameAccount(GameAccountEntity gameEntity)
     {
-        var result = await _context.GameAccounts.AddAsync(gameEntity);
+        var result =await _context.GameAccounts.AddAsync(gameEntity);
         await _context.SaveChangesAsync();
         
         return result.Entity;
     }
 
-    public async Task<int> DeleteGameAccount(long id)
+    public async Task<GameAccountEntity> DeleteGameAccount(GameAccountEntity entity)
     {
-        var entity = await _context.GameAccounts.FindAsync(id);
-        if (entity == null)
-            return 0;
-        
-        // Implement soft delete
         entity.DeletedAt = DateTime.UtcNow;
         entity.IsActive = false;
         
-        // Update the entity
         _context.GameAccounts.Update(entity);
         await _context.SaveChangesAsync();
         
-        return 1; // One record affected
+        return entity; 
     }
 
     public async Task<GameAccountEntity?> UpdateGameAccount(GameAccountEntity entity)
@@ -77,9 +70,10 @@ public class GameAccountRepository:IGameAccountRepository
             await _context.SaveChangesAsync();
             return entity;
         }
-        catch (DbUpdateConcurrencyException e)
+        catch (DbUpdateConcurrencyException)
         {
-            throw new ServiceException("Db error",$"Database update exception:{e.Message}");
+            // The entity has been modified by another user
+            return null;
         }
     }
 

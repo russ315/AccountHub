@@ -41,7 +41,7 @@ public class GameAccountController:Controller
     [Authorize("Merchant")]
     public async Task<IActionResult> DeleteGameAccountById(long id)
     {
-        await _gameAccountService.DeleteGameAccountById(id);
+        await _gameAccountService.DeleteGameAccountById(id,HttpContext.RequestAborted);
         return Ok();
     }
     [HttpPost]
@@ -49,6 +49,15 @@ public class GameAccountController:Controller
     public async Task<IActionResult> AddGameAccount([FromForm] CreateGameAccountDto model)
     {
         var game =await  _gameAccountService.CreateGameAccount(model,HttpContext.RequestAborted);
+        return Ok(game);
+
+
+    }
+    [HttpPut]
+    [Authorize("Merchant")]
+    public async Task<IActionResult> UpdateGameAccount([FromForm] UpdateGameAccountDto model)
+    {
+        var game =await  _gameAccountService.UpdateGameAccount(model,HttpContext.RequestAborted);
         return Ok(game);
 
 
