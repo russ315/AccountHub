@@ -19,15 +19,10 @@ public static class MapperExtensions
     }
     public static GameAccountEntity ToEntity(this CreateGameAccountDto model)
     {
-        return new GameAccountEntity()
-        {
-            Price = model.Price,
-            Characteristics= JsonDocument.Parse(model.Characteristics),
-            SellerId = model.SellerId,
-            CurrentOwnerId = model.CurrentOwnerId,
-            Status = (AccountStatus)model.Status,
-            GameId = model.GameId,
-        };
+        return new GameAccountEntity(
+            JsonDocument.Parse(model.Characteristics), model.Price,
+            (AccountStatus)model.Status, model.GameId, model.SellerId, model.CurrentOwnerId);
+
     }
     
     public static GameServiceEntity ToEntity(this CreateGameServiceDto model)

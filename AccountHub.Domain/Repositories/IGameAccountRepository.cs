@@ -9,5 +9,5 @@ public interface IGameAccountRepository
     Task<IEnumerable<GameAccountEntity>> GetAccountsByGame(string gameName, CancellationToken cancellationToken);
     Task<GameAccountEntity> AddGameAccount(GameAccountEntity gameEntity);
     Task<int> DeleteGameAccount(long gameId);
-
+    Task SaveChangesAsync();
 }

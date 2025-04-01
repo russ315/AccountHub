@@ -1,4 +1,5 @@
 using AccountHub.Api.Extensions;
+using AccountHub.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder
@@ -8,7 +9,9 @@ builder
     .AddOptions()
     .AddApplicationServices()
     .AddIntegrationServices()
-    .AddExceptionHandler();
+    .AddExceptionHandler()
+    .AddDomainEvents()
+    .AddInfrastructure();
 
 builder.Services.AddControllers();
 

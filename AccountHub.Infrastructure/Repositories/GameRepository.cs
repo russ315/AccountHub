@@ -17,13 +17,17 @@ public class GameRepository: IGameRepository
     }
     public async Task<GameEntity?> GetById(long id, CancellationToken cancellationToken)
     {
-        var game =await _context.Games.FirstOrDefaultAsync(p=>p.Id==id, cancellationToken);
+        var game = await _context.Games
+            .Where(p => p.IsActive && p.DeletedAt == null && p.Id == id)
+            .FirstOrDefaultAsync(cancellationToken);
         return game;
     }
 
     public  async Task<GameEntity?> GetByName(string name, CancellationToken cancellationToken)
     {
-        var game =await _context.Games.FirstOrDefaultAsync(p=>p.Name==name, cancellationToken);
+        var game = await _context.Games
+            .Where(p => p.IsActive && p.DeletedAt == null && p.Name == name)
+            .FirstOrDefaultAsync(cancellationToken);
         return game;    
     }
 
@@ -44,7 +48,18 @@ public class GameRepository: IGameRepository
 
     public async Task<int> DeleteGame(long gameId)
     {
-        var result = await _context.Games.Where(p=>p.Id==gameId).ExecuteDeleteAsync();
-        return result;
+        var entity = await _context.Games.FindAsync(gameId);
+        if (entity == null)
+            return 0;
+        
+        // Implement soft delete
+        entity.DeletedAt = DateTime.UtcNow;
+        entity.IsActive = false;
+        
+        // Update the entity
+        _context.Games.Update(entity);
+        await _context.SaveChangesAsync();
+        
+        return 1; // One record affected
     }
 }

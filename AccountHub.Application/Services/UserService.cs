@@ -81,7 +81,7 @@ public class UserService : IUserService
         if (userRegisterDto.Image != null)
         {
             var fileName = userRegisterDto.Username + userRegisterDto.Email;
-            userEntity.ImageUrl= await _imageService.UploadImage(fileName,userRegisterDto.Image.OpenReadStream(),cancellationToken);
+            userEntity.UpdateProfile(await _imageService.UploadImage(fileName,userRegisterDto.Image.OpenReadStream(),cancellationToken));
         }
         
         return userEntity;
@@ -197,7 +197,7 @@ public class UserService : IUserService
             throw new EntityNotFoundException("Invalid data", "Invalid username");
         var fileName = user.UserName + user.Email;
         var url = await _imageService.UploadImage(fileName, userChangeImageDto.Image.OpenReadStream(),cancellationToken);
-        user.ImageUrl = url;
+        user.UpdateProfile(url);
         await _userManager.UpdateAsync(user);
         return url;
     }

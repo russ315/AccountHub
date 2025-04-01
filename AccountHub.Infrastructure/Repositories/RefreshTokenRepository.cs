@@ -13,9 +13,12 @@ public class RefreshTokenRepository:IRefreshTokenRepository
     {
         _context = context;
     }
-    public async Task<RefreshTokenEntity?> GetRefreshToken(string userId, string deviceId,CancellationToken cancellationToken)
+    public async Task<RefreshTokenEntity?> GetRefreshToken(string userId, string deviceId, CancellationToken cancellationToken)
     {
-        var refreshToken =await _context.RefreshTokens.SingleOrDefaultAsync(x => x.UserId == userId && x.DeviceId == deviceId,cancellationToken);
+        var refreshToken = await _context.RefreshTokens
+            .Where(x => x.IsActive && x.DeletedAt == null && 
+                     x.UserId == userId && x.DeviceId == deviceId)
+            .SingleOrDefaultAsync(cancellationToken);
         return refreshToken;
     }
 
@@ -28,11 +31,20 @@ public class RefreshTokenRepository:IRefreshTokenRepository
 
     public async Task<int> DeleteRefreshToken(string userId, string deviceId)
     {
+        var entity = await _context.RefreshTokens
+            .SingleOrDefaultAsync(x => x.UserId == userId && x.DeviceId == deviceId && x.DeletedAt == null);
         
-       var totalDeletedTokens =await _context.RefreshTokens.Where(x=> x.UserId == userId && x.DeviceId == deviceId)
-            .ExecuteDeleteAsync();
-       
-       return totalDeletedTokens;
+        if (entity == null)
+            return 0;
         
+        // Implement soft delete
+        entity.DeletedAt = DateTime.UtcNow;
+        entity.IsActive = false;
+        
+        // Update the entity
+        _context.RefreshTokens.Update(entity);
+        await _context.SaveChangesAsync();
+        
+        return 1; // One record affected
     }
 }

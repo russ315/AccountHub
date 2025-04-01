@@ -8,8 +8,6 @@ namespace AccountHub.Infrastructure.Repositories;
 public class AccountImageRepository:IAccountImageRepository
 {
     private readonly DataContext _context;
-    private IAccountImageRepository _accountImageRepositoryImplementation;
-    private IAccountImageRepository _accountImageRepositoryImplementation1;
 
     public AccountImageRepository(DataContext context)
     {

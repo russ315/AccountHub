@@ -17,6 +17,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using AccountHub.Application.Events;
+using AccountHub.Application.Events.Handlers;
+using AccountHub.Domain.Events;
 
 namespace AccountHub.Api.Extensions;
 
@@ -160,6 +163,19 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 
-    
+    public static WebApplicationBuilder AddDomainEvents(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddSingleton<IDomainEventDispatcher, DomainEventDispatcher>();
+        
+        // Register all event handlers
+        builder.Services.AddTransient<IEventHandler<GameAccountCreatedEvent>, GameAccountCreatedEventHandler>();
+        builder.Services.AddTransient<IEventHandler<GameAccountSoldEvent>, GameAccountSoldEventHandler>();
+        builder.Services.AddTransient<IEventHandler<GameAccountStatusChangedEvent>, GameAccountStatusChangeHandler>();
+        builder.Services.AddTransient<IEventHandler<GameAccountCredentialsUpdatedEvent>, GameAccountCredentialHandler>();
+
+        // Add more event handlers as needed
+        
+        return builder;
+    }
 
 }

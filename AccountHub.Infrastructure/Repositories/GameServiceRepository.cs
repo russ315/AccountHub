@@ -15,15 +15,19 @@ public class GameServiceRepository:IGameServiceRepository
     }
     public async Task<GameServiceEntity?> GetAccountServiceById(long id, CancellationToken cancellationToken)
     {
-        var gameService = await _context.GameServices.FirstOrDefaultAsync(p=>p.Id==id, cancellationToken);
+        var gameService = await _context.GameServices
+            .Where(p => p.IsActive && p.DeletedAt == null && p.Id == id)
+            .FirstOrDefaultAsync(cancellationToken);
         return gameService;
     }
 
     public async Task<IEnumerable<GameServiceEntity>> GetAccountServicesByUsername(string username, CancellationToken cancellationToken)
     {
-        var gameServices =await _context.GameServices
+        var gameServices = await _context.GameServices
             .Include(p => p.Provider)
-            .Where(p => (p.Provider != null && p.Provider.UserName == username)).ToListAsync(cancellationToken);
+            .Where(p => p.IsActive && p.DeletedAt == null && 
+                     (p.Provider != null && p.Provider.UserName == username))
+            .ToListAsync(cancellationToken);
         
         return gameServices;
     }
@@ -33,7 +37,8 @@ public class GameServiceRepository:IGameServiceRepository
     {
         var gameServices = await _context.GameServices
             .Include(p => p.Game)
-            .Where(p => p.Game != null && p.Game.Name == gameName)
+            .Where(p => p.IsActive && p.DeletedAt == null && 
+                     (p.Game != null && p.Game.Name == gameName))
             .ToListAsync(cancellationToken);
         return gameServices;
     }
@@ -48,7 +53,18 @@ public class GameServiceRepository:IGameServiceRepository
 
     public async Task<int> DeleteGameService(long id)
     {
-        var result = await _context.GameAccounts.Where(p=>p.Id==id).ExecuteDeleteAsync();
-        return result;
+        var entity = await _context.GameServices.FindAsync(id);
+        if (entity == null)
+            return 0;
+        
+        // Implement soft delete
+        entity.DeletedAt = DateTime.UtcNow;
+        entity.IsActive = false;
+        
+        // Update the entity
+        _context.GameServices.Update(entity);
+        await _context.SaveChangesAsync();
+        
+        return 1; // One record affected
     }
 }
